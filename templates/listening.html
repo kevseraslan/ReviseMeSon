@@ -1,0 +1,228 @@
+{% extends "hedefleyici.html" %}
+
+{% block title %}Listening{% endblock %}
+
+{% block styles %}
+{{ super() }}
+<style>
+    /* Add the new background style here */
+    .listening-bg {
+        background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%);
+        position: fixed;
+        left: 0; top: 0; width: 100vw; height: 100vh;
+        z-index: -1;
+    }
+    /* Listening sayfasına özel stiller */
+    h1 {
+        color: #30E8E8;
+        font-size: 2.5rem;
+        font-weight: 800;
+        margin-bottom: 1.5rem;
+        text-shadow: 0 0 15px rgba(48, 6, 75, 0.8), 0 0 20px rgba(48, 6, 75, 0.4);
+    }
+    
+    .card {
+        background-color: rgba(26, 20, 64, 0.8);
+        border: 1px solid rgba(106, 55, 181, 0.3);
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        transition: all 0.3s ease;
+        color: #FFF;
+        backdrop-filter: blur(5px);
+    }
+    
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 35px rgba(46, 205, 200, 0.3);
+        border-color: #30E8E8;
+    }
+    
+    .card-title {
+        color: white;
+        text-shadow: 0 0 8px rgba(0, 0, 0, 0.7);
+    }
+    
+    .card-subtitle {
+        color: #CCC !important;
+    }
+    
+    .card-text {
+        color: #EEE;
+    }
+    
+    .text-muted {
+        color: #AAA !important;
+    }
+    
+    .btn-primary {
+        background: linear-gradient(135deg, rgba(106, 55, 181, 0.9), rgba(132, 81, 209, 0.9));
+        border: none;
+        box-shadow: 0 0 15px rgba(106, 55, 181, 0.5);
+    }
+    
+    .btn-primary:hover {
+        background: linear-gradient(135deg, rgba(132, 81, 209, 0.9), rgba(106, 55, 181, 0.9));
+        transform: translateY(-3px);
+    }
+    
+    .btn-outline-primary {
+        color: #FFF;
+        border-color: rgba(106, 55, 181, 0.5);
+    }
+    
+    .btn-outline-primary:hover {
+        background-color: rgba(106, 55, 181, 0.3);
+        color: #FFF;
+        border-color: rgba(106, 55, 181, 0.8);
+    }
+    
+    .btn-outline-success {
+        color: #FFF;
+        border-color: rgba(46, 205, 200, 0.5);
+    }
+    
+    .btn-outline-success:hover {
+        background-color: rgba(46, 205, 200, 0.3);
+        color: #FFF;
+        border-color: rgba(46, 205, 200, 0.8);
+    }
+    
+    .btn-outline-danger {
+        color: #FFF;
+        border-color: rgba(245, 111, 173, 0.5);
+    }
+    
+    .btn-outline-danger:hover {
+        background-color: rgba(245, 111, 173, 0.3);
+        color: #FFF;
+        border-color: rgba(245, 111, 173, 0.8);
+    }
+    
+    .btn-outline-light {
+        color: #FFF;
+        border-color: rgba(255, 255, 255, 0.5);
+    }
+    
+    .btn-outline-light:hover {
+        background-color: rgba(255, 255, 255, 0.2);
+        color: #FFF;
+    }
+    
+    .list-group-item {
+        background-color: rgba(26, 20, 64, 0.5);
+        border: 1px solid rgba(106, 55, 181, 0.2);
+        color: #EEE;
+    }
+    
+    .progress {
+        height: 10px;
+        background-color: rgba(255, 255, 255, 0.1);
+    }
+    
+    .progress-bar {
+        background: linear-gradient(135deg, rgba(46, 205, 200, 0.9), rgba(106, 55, 181, 0.9));
+    }
+    
+    .modal-content {
+        background-color: rgba(26, 20, 64, 0.95);
+        border: 1px solid rgba(106, 55, 181, 0.3);
+        color: #FFF;
+        backdrop-filter: blur(10px);
+    }
+    
+    .modal-header {
+        border-bottom: 1px solid rgba(106, 55, 181, 0.3);
+    }
+    
+    .modal-footer {
+        border-top: 1px solid rgba(106, 55, 181, 0.3);
+    }
+    
+    .form-control {
+        background-color: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(106, 55, 181, 0.3);
+        color: #FFF;
+    }
+    
+    .form-control:focus {
+        background-color: rgba(255, 255, 255, 0.15);
+        border-color: rgba(46, 205, 200, 0.5);
+        color: #FFF;
+        box-shadow: 0 0 0 0.25rem rgba(46, 205, 200, 0.25);
+    }
+    
+    .form-label {
+        color: #CCC;
+    }
+    
+    .btn-success {
+        background: linear-gradient(135deg, #30E8E8, #6A37B5);
+        border: none;
+        color: #fff;
+        font-weight: bold;
+    }
+    
+    .btn-success:hover {
+        background: linear-gradient(135deg, #6A37B5, #30E8E8);
+    }
+</style>
+{% endblock %}
+
+{% block hedefleyici_content %}
+<div class="listening-bg"></div>
+<div class="container-fluid p-0">
+    <div class="row">
+        <div class="col-12">
+            <h1 style="color:#232323; text-shadow:0 0 15px #fff, 0 0 20px #fff;" class="mb-2"><i class="fas fa-headphones" style="margin-right: 12px;"></i>Listening</h1>
+            <p class="mb-4">Her gün 2 yeni video! İzlediklerini işaretle, İngilizceni geliştir.</p>
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <div class="row" id="listening-videos">
+                        {% for vid in video_ids %}
+                        <div class="col-md-6 mb-4 video-card" data-video-id="{{ vid }}">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <div class="ratio ratio-16x9 mb-3">
+                                        <iframe src="https://www.youtube.com/embed/{{ vid }}" allowfullscreen></iframe>
+                                    </div>
+                                    <button class="btn btn-success mark-watched" data-id="{{ vid }}">İzledim</button>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.mark-watched').forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                const videoId = this.getAttribute('data-id');
+                fetch('/mark_listening_watched', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                    body: JSON.stringify({ video_id: videoId })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                        // Kartı ekrandan kaldır
+                        this.closest('.video-card').remove();
+                        } else {
+                        alert('Bir hata oluştu: ' + (data.error || 'Bilinmeyen hata'));
+                        }
+                    });
+            });
+        });
+    });
+</script>
+{% endblock %} 

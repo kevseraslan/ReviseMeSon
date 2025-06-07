@@ -1,0 +1,216 @@
+{% extends "base.html" %}
+
+{% block title %}Bugünkü Soru Detayı - ReviseMe{% endblock %}
+
+{% block page_content %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Ana İçerik -->
+        <main class="col-12 px-md-4">
+            <!-- Üst Menü -->
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                
+                <div>
+                    <a href="{{ url_for('today_questions') }}" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left"></i> Geri Dön
+                    </a>
+                    <button onclick="toggleFavorite({{ question.QuestionId }})" class="btn {{ 'btn-warning' if is_favorite else 'btn-outline-warning' }}">
+                        <i class="fas fa-star"></i> {{ 'Favorilerden Çıkar' if is_favorite else 'Favorilere Ekle' }}
+                    </button>
+                </div>
+            </div>
+
+            <!-- Soru Detayı -->
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="card mb-4">
+                        {% if question.ImagePath %}
+                        <img src="{{ url_for('static', filename=question.ImagePath) }}" class="card-img-top" alt="Soru Görseli" style="max-height: 400px; object-fit: contain;">
+                        {% endif %}
+                        <div class="card-body">
+                            <h5 class="card-title">Soru İçeriği</h5>
+                            <p class="card-text">{{ question.Content }}</p>
+                            
+                            <div class="d-flex justify-content-between align-items-center mt-3">
+                                <div>
+                                    <span class="badge bg-primary">{{ question.category.Name if question.category else 'Kategorisiz' }}</span>
+                                    {% if question.DifficultyLevel %}
+                                    <span class="badge bg-secondary">{{ question.DifficultyLevel }}</span>
+                                    {% endif %}
+                                </div>
+                                <div class="btn-group">
+                                    <a href="{{ url_for('edit_question', question_id=question.QuestionId) }}" class="btn btn-outline-primary">
+                                        <i class="fas fa-edit"></i> Düzenle
+                                    </a>
+                                    <button onclick="deleteQuestion({{ question.QuestionId }})" class="btn btn-outline-danger">
+                                        <i class="fas fa-trash"></i> Sil
+                                    </button>
+                                    <button onclick="skipQuestion({{ question.QuestionId }}, '{{ request.args.get('source', 'today') }}', '{{ question.CategoryId }}')" class="btn btn-warning">
+                                        <i class="fas fa-forward"></i> Soruyu Atla
+                                    </button>
+                                    {% if question.RepeatCount < 3 %}
+                                    <button type="button" onclick="markCompleted({{ question.QuestionId }});" class="btn btn-success" id="completeBtn">
+                                        <i class="fas fa-check"></i> Tamamlandı
+                                    </button>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Notlar -->
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">Notlar</h5>
+                        </div>
+                        <div class="card-body">
+                            <form id="noteForm" class="mb-3">
+                                <div class="mb-3">
+                                    <textarea class="form-control" id="noteContent" rows="3" placeholder="Not ekle..."></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-plus"></i> Not Ekle
+                                </button>
+                            </form>
+                            
+                            <div id="notesList">
+                                {% for note in notes %}
+                                <div class="card mb-2">
+                                    <div class="card-body">
+                                        <p class="card-text">{{ note.Content }}</p>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function toggleFavorite(questionId) {
+    fetch(`/toggle_favorite/${questionId}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        } else {
+            alert('Favori durumu güncellenirken bir hata oluştu.');
+        }
+    });
+}
+
+function markCompleted(questionId) {
+    var btn = document.getElementById('completeBtn');
+    if (btn) btn.disabled = true; // Butonu hemen devre dışı bırak
+    fetch(`/update_repeat_count/${questionId}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            updateRepeatDisplay(data.repeat_count, data.next_repeat_date, data.updated_repeat_dates);
+            setTimeout(function() {
+                fetch(`/next_question/${questionId}?source=today`)
+                    .then(resp => resp.json())
+                    .then(nextData => {
+                        console.log('nextData:', nextData); // Debug için ekledim
+                        if (nextData.next_id) {
+                            window.location.href = `/view_today_question/${nextData.next_id}`;
+                        } else {
+                            window.location.href = '/today_questions';
+                        }
+                    });
+            }, 200);
+        } else {
+            if (btn) btn.disabled = false;
+            alert(data.error || 'Bir hata oluştu.');
+        }
+    });
+}
+
+function updateRepeatDisplay(repeatCount, nextRepeatDate, updatedRepeatDates) {
+    // Mevcut vurguları kaldır
+    var repeatCols = document.querySelectorAll('#repeatDatesSection .col-md-4');
+    if (repeatCols) {
+        repeatCols.forEach(function(el) {
+            if (el) el.classList.remove('bg-light', 'rounded', 'fw-bold', 'bg-success', 'text-white');
+        });
+    }
+
+    // Yeni tekrar sayısına göre ilgili tarihi vurgula
+    if (repeatCount === 0 && document.getElementById('repeat1')) {
+        document.getElementById('repeat1').classList.add('bg-light', 'rounded', 'fw-bold');
+    } else if (repeatCount === 1 && document.getElementById('repeat2')) {
+        document.getElementById('repeat2').classList.add('bg-light', 'rounded', 'fw-bold');
+    } else if (repeatCount === 2 && document.getElementById('repeat3')) {
+        document.getElementById('repeat3').classList.add('bg-light', 'rounded', 'fw-bold');
+    } else if (repeatCount >= 3 && document.getElementById('repeat3')) {
+        document.getElementById('repeat3').classList.add('bg-success', 'rounded', 'text-white');
+    }
+
+    // Backend'den gelen güncel tekrar tarihlerini sayfada göster
+    if (updatedRepeatDates) {
+        if (document.querySelector('#repeat1 p')) document.querySelector('#repeat1 p').textContent = updatedRepeatDates.repeat1;
+        if (document.querySelector('#repeat2 p')) document.querySelector('#repeat2 p').textContent = updatedRepeatDates.repeat2;
+        if (document.querySelector('#repeat3 p')) document.querySelector('#repeat3 p').textContent = updatedRepeatDates.repeat3;
+    }
+}
+
+// Sayfa yüklendiğinde mevcut tekrar durumuna göre vurguyu ayarla
+document.addEventListener('DOMContentLoaded', function() {
+    // Backend'den gelen ilk tekrar sayısına göre vurguyu ayarla
+    const initialRepeatCount = {{ question.RepeatCount }};
+    // Sayfa ilk yüklendiğinde backend'den gelen orijinal tarihlerle vurguyu ayarla
+    // updatedRepeatDates nesnesini Jinja ile doğrudan oluşturup fonksiyona aktaralım
+    const initialRepeatDates = {
+        repeat1: '{{ question.Repeat1Date.strftime('%d.%m.%Y') if question.Repeat1Date else 'Belirlenmedi' }}',
+        repeat2: '{{ question.Repeat2Date.strftime('%d.%m.%Y') if question.Repeat2Date else 'Belirlenmedi' }}',
+        repeat3: '{{ question.Repeat3Date.strftime('%d.%m.%Y') if question.Repeat3Date else 'Belirlenmedi' }}'
+    };
+    updateRepeatDisplay(initialRepeatCount, null, initialRepeatDates);
+});
+
+function deleteQuestion(questionId) {
+    if (confirm('Bu soruyu silmek istediğinizden emin misiniz?')) {
+        fetch(`/delete_question/${questionId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Bugünkü sorulardan gelindiği için bugünün soruları sayfasına yönlendir
+                window.location.href = "{{ url_for('today_questions') }}";
+            } else {
+                alert('Soru silinirken bir hata oluştu.');
+            }
+        });
+    }
+}
+
+function skipQuestion(currentId, source, categoryId) {
+    let url = `/next_question/${currentId}?source=${source}`
+}
+</script>
+{% endblock %}

@@ -1,0 +1,1555 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta name="description" content="ReviseMe - Kişiselleştirilmiş tekrar sistemi ve öğrenme platformu">
+    <meta name="theme-color" content="#4e73df">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>{% block title %}ReviseMe{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #4e73df;
+            --secondary-color: #1cc88a;
+            --accent-color: #f6c23e;
+            --danger-color: #e74a3b;
+            --dark-color: #5a5c69;
+            --light-color: #f8f9fc;
+            --text-color: #333;
+            --text-muted: #858796;
+            --border-radius: 0.5rem;
+            --box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+            --transition-speed: 0.3s;
+            --sidebar-width: 250px;
+            --sidebar-width-collapsed: 70px;
+        }
+        
+        * {
+            box-sizing: border-box;
+        }
+        
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+            background-color: #f0f0f0 !important; /* Kenar arka planını açık gri yap */
+        }
+        
+        body {
+            background-color: var(--light-color);
+            font-family: 'Nunito', sans-serif;
+            color: var(--text-color);
+            font-size: 16px;
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            transition: background-color var(--transition-speed) ease;
+        }
+        
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            /* background-color: #f0f0f0; /* Kenar arka planını açık gri yap */ */
+            background-image: none !important; /* Arka plan görselini kaldır */
+            /* background-size: cover; */
+            /* background-position: center; */
+            /* background-repeat: no-repeat; */
+            z-index: -1;
+        }
+        
+        /* Responsive Typography */
+        h1 {
+            font-size: calc(1.375rem + 1.5vw);
+        }
+        
+        h2 {
+            font-size: calc(1.325rem + 0.9vw);
+        }
+        
+        h3 {
+            font-size: calc(1.275rem + 0.3vw);
+        }
+        
+        h4 {
+            font-size: 1.25rem;
+        }
+        
+        h5 {
+            font-size: 1.125rem;
+        }
+        
+        h6 {
+            font-size: 1rem;
+        }
+        
+        @media (max-width: 576px) {
+            body {
+                font-size: 14px;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            h2 {
+                font-size: 1.6rem;
+            }
+            
+            h3 {
+                font-size: 1.4rem;
+            }
+        }
+        
+        /* Page Header Style */
+        .page-header {
+            font-size: 40px; /* Görseldeki font boyutu */
+            font-family: 'Nunito', sans-serif; /* Görseldeki font ailesi */
+            margin: 0px 0px 32px; /* Görseldeki margin */
+            padding: 32px 0px 0px; /* Görseldeki padding */
+            color: #000000; /* İstenen siyah renk */
+            font-weight: bold; /* Genellikle başlıklar bold olur, görselde de bold gibi duruyor */
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* Metin gölgesi eklendi */
+        }
+        
+        /* Navbar Styles */
+        .navbar {
+            background: linear-gradient(135deg, #6a37b5, #4e73df);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 0.5rem 1rem;
+            z-index: 1030;
+        }
+        
+        .navbar-brand {
+            font-weight: 700;
+            color: white !important;
+            font-size: 1.25rem;
+            padding: 0;
+            margin-right: 1rem;
+        }
+        
+        .nav-link {
+            color: rgba(255,255,255,0.8) !important;
+            transition: all var(--transition-speed) ease;
+            padding: 0.5rem 1rem;
+            font-weight: 600;
+        }
+        
+        .nav-link:hover {
+            color: white !important;
+            transform: translateY(-1px);
+        }
+        
+        .navbar-toggler {
+            border: none;
+            padding: 0.25rem 0.5rem;
+            font-size: 1.25rem;
+            color: white;
+        }
+        
+        .navbar-toggler:focus {
+            box-shadow: none;
+            outline: none;
+        }
+        
+        /* Card Styles */
+        .card {
+            border: none;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            transition: transform var(--transition-speed) ease, box-shadow var(--transition-speed) ease;
+            margin-bottom: 1.5rem;
+            overflow: hidden;
+        }
+        
+        .card:hover {
+            transform: translateY(-2px);
+        }
+        
+        .btn {
+            border-radius: 0.35rem;
+            padding: 0.375rem 1rem;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color), #224abe);
+            border: none;
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, var(--secondary-color), #13855c);
+            border: none;
+        }
+        
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.15);
+        }
+        
+        .progress {
+            height: 0.5rem;
+            border-radius: 1rem;
+            background-color: #eaecf4;
+        }
+        
+        .progress-bar {
+            background: linear-gradient(135deg, var(--secondary-color), #13855c);
+        }
+        
+        .badge {
+            padding: 0.5em 0.75em;
+            font-weight: 600;
+            border-radius: 0.35rem;
+        }
+        
+        .alert {
+            border: none;
+            border-radius: 0.5rem;
+            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+            max-width: 300px; /* Maksimum genişliği ayarla */
+            padding: 0.5rem 1rem; /* İç boşluğu azalt */
+            margin-left: auto; /* Ortalamak için */
+            margin-right: auto; /* Ortalamak için */
+            font-size: 0.9rem; /* Yazı boyutunu küçült (isteğe bağlı) */
+        }
+        
+        .form-control {
+            border-radius: 0.35rem;
+            padding: 0.5rem 1rem;
+            border: 1px solid #d1d3e2;
+        }
+        
+        .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.25);
+        }
+        
+        .modal-content {
+            border: none;
+            border-radius: 0.5rem;
+            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+        }
+        
+        .modal-header {
+            border-radius: 0.5rem 0.5rem 0 0;
+        }
+        
+        .list-group-item {
+            border: none;
+            margin-bottom: 0.5rem;
+            border-radius: 0.5rem !important;
+        }
+        
+        .motivation-quote {
+            font-style: italic;
+            color: var(--dark-color);
+            text-align: center;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-left: 4px solid var(--primary-color);
+            background-color: #f8f9fc;
+        }
+        
+        /* Daire şeklindeki kategori kartları için stiller */
+        .progress-ring-container {
+            width: 200px;
+            height: 200px;
+        }
+        
+        .progress-ring {
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+        
+        .progress-ring-circle-bg {
+            fill: transparent;
+            stroke: #e9ecef;
+            stroke-width: 8;
+        }
+        
+        .progress-ring-circle {
+            fill: transparent;
+            stroke-width: 8;
+            stroke-linecap: round;
+            transition: stroke-dasharray 0.5s ease;
+        }
+        
+        .category-circle {
+            width: 160px;
+            height: 160px;
+            border-radius: 50%;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+            position: absolute;
+            top: 20px;
+            left: 20px;
+        }
+        
+        .category-circle:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+        }
+        
+        .category-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.3);
+            transition: background-color 0.3s ease;
+        }
+        
+        .category-circle:hover .category-overlay {
+            background-color: rgba(0,0,0,0.1);
+        }
+        
+        .category-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #333;
+            transition: color 0.3s ease;
+        }
+        
+        a:hover .category-title {
+            color: var(--primary-color);
+        }
+        
+        /* Hero bölümü için stiller */
+        body {
+            overflow-x: hidden;
+            margin: 0;
+            padding: 0;
+            width: 100%;
+        }
+        
+        .hero-banner {
+            overflow: hidden;
+            width: 100vw;
+            margin: 0;
+            padding: 0;
+            position: relative;
+            left: 50%;
+            right: 50%;
+            margin-left: -50vw;
+            margin-right: -50vw;
+        }
+        
+        .hero-image {
+            background-color: #2a9d8f !important;
+            background-image: none !important;
+            position: relative;
+            height: 500px !important;
+            width: 100%;
+        }
+        
+        .hero-curved-container {
+            position: relative;
+            height: 100%;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            overflow: hidden;
+        }
+        
+        .hero-curved-container:after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 30%;
+            background-color: #fff;
+            border-top-left-radius: 50% 100%;
+            border-top-right-radius: 50% 100%;
+            transform: scale(1.5);
+        }
+        
+        .hero-content {
+            position: relative;
+            z-index: 10;
+            padding-left: 10%;
+            max-width: 600px;
+        }
+        
+        .intro-text {
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 500;
+        }
+        
+        .hero-title {
+            font-size: 3.5rem;
+            font-weight: 700;
+            line-height: 1.2;
+        }
+        
+        .hero-objects {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 5;
+            pointer-events: none;
+        }
+        
+        .hero-object {
+            position: absolute;
+            animation: float 3s ease-in-out infinite alternate;
+        }
+        
+        .hero-object-1 {
+            top: 10%;
+            right: 15%;
+            width: 80px;
+            animation-delay: 0s;
+        }
+        
+        .hero-object-2 {
+            top: 60%;
+            right: 25%;
+            width: 60px;
+            animation-delay: 0.5s;
+        }
+        
+        .hero-object-3 {
+            top: 15%;
+            right: 35%;
+            width: 50px;
+            animation-delay: 1s;
+        }
+        
+        .hero-object-4 {
+            top: 70%;
+            right: 10%;
+            width: 70px;
+            animation-delay: 1.5s;
+        }
+        
+        .hero-object-5 {
+            top: 5%;
+            right: 5%;
+            width: 65px;
+            animation-delay: 0.8s;
+        }
+        
+        .hero-object-6 {
+            top: 25%;
+            right: 55%;
+            width: 55px;
+            animation-delay: 1.2s;
+        }
+        
+        .hero-object-7 {
+            top: 8%;
+            left: 15%;
+            width: 70px;
+            animation-delay: 0.3s;
+        }
+        
+        .hero-object-8 {
+            top: 65%;
+            left: 10%;
+            width: 50px;
+            animation-delay: 1.7s;
+        }
+        
+        @keyframes float {
+            0% {
+                transform: translateY(0) rotate(0deg);
+            }
+            100% {
+                transform: translateY(-20px) rotate(5deg);
+            }
+        }
+    </style>
+    
+    {# Sidebar ve Responsive Layout Stilleri #}
+    <style>
+        /* Sidebar ve içerik alanı için sade ve hatasız geçiş */
+        #wrapper {
+            display: flex;
+            width: 100%;
+            min-height: 100vh;
+        }
+        .sidebar-wrapper {
+            width: 250px;
+            min-width: 250px;
+            max-width: 250px;
+            transition: all 0.3s ease;
+            background: #232946;
+            position: fixed;
+            top: 56px;
+            left: 0;
+            height: calc(100vh - 56px);
+            z-index: 1030;
+        }
+        .sidebar-wrapper.sidebar-collapsed {
+            margin-left: -250px;
+        }
+        .main-content-area {
+            flex: 1 1 0%;
+            width: calc(100% - 250px);
+            min-height: 100vh;
+            display: flex;
+            justify-content: flex-start;
+            align-items: flex-start;
+            margin-left: 250px !important;
+            padding: 0 !important;
+            transition: all 0.3s ease;
+        }
+        .main-content-area.sidebar-collapsed {
+            width: 100% !important;
+            margin-left: 0 !important;
+        }
+        .inner-content-wrapper {
+            width: 100%;
+            max-width: 100%;
+            margin: 0;
+            padding: 32px 24px;
+            box-sizing: border-box;
+        }
+        @media (max-width: 991.98px) {
+            .sidebar-wrapper {
+                position: fixed;
+                top: 56px;
+                left: 0;
+                height: calc(100vh - 56px);
+                z-index: 1500;
+            }
+            .main-content-area {
+                width: 100% !important;
+                margin-left: 0 !important;
+            }
+        }
+    </style>
+    
+    {# Animasyonlar #}
+    <style>
+        /* Fade In Animasyonu */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .animated--fade-in {
+            animation: fadeIn 0.2s ease-in;
+        }
+        
+        /* Grow In Animasyonu */
+        @keyframes growIn {
+            0% {
+                transform: scale(0.9);
+                opacity: 0;
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+        
+        .animated--grow-in {
+            animation: growIn 0.2s ease-in-out;
+            transform-origin: top center;
+        }
+        
+        /* Slide In Animasyonu */
+        @keyframes slideInLeft {
+            0% {
+                transform: translateX(-10px);
+                opacity: 0;
+            }
+            100% {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        .animated--slide-in {
+            animation: slideInLeft 0.2s ease;
+        }
+        
+        /* Avatar Stili */
+        .avatar-circle {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+        }
+        
+        /* Icon Circle */
+        .icon-circle {
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+        }
+        
+        /* Dropdown Menu Animasyonu */
+        .dropdown-menu {
+            border: none;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            overflow: hidden;
+        }
+        
+        .dropdown-header {
+            background-color: var(--primary-color);
+            color: white;
+            font-weight: 600;
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+        }
+        
+        .dropdown-item {
+            padding: 0.75rem 1rem;
+            transition: all var(--transition-speed) ease;
+        }
+        
+        .dropdown-item:hover {
+            background-color: rgba(78, 115, 223, 0.1);
+            color: var(--primary-color);
+        }
+    </style>
+    
+    {# Koyu tema stilleri #}
+    <style>
+        body {
+            background-color: transparent !important;
+            position: relative;
+        }
+        
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            /* background-color: #f0f0f0; /* Kenar arka planını açık gri yap */ */
+            background-image: none !important; /* Arka plan görselini kaldır */
+            /* background-size: cover; */
+            /* background-position: center; */
+            /* background-repeat: no-repeat; */
+            z-index: -1;
+        }
+        
+        @keyframes twinkle {
+            0% { opacity: 0.3; }
+            50% { opacity: 1; }
+            100% { opacity: 0.3; }
+        }
+        
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        .star {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background-color: white;
+            border-radius: 50%;
+        }
+        
+        .star-1 { top: 10%; left: 20%; animation: twinkle 3s infinite ease-in-out; }
+        .star-2 { top: 15%; left: 50%; animation: twinkle 4s infinite ease-in-out; }
+        .star-3 { top: 25%; left: 80%; animation: twinkle 5s infinite ease-in-out; }
+        .star-4 { top: 40%; left: 10%; animation: twinkle 4.5s infinite ease-in-out; }
+        .star-5 { top: 60%; left: 30%; animation: twinkle 3.5s infinite ease-in-out; }
+        .star-6 { top: 75%; left: 60%; animation: twinkle 4s infinite ease-in-out; }
+        .star-7 { top: 85%; left: 90%; animation: twinkle 3s infinite ease-in-out; }
+        
+        body.dark-theme {
+            background-color: #181818;
+            color: #f8f9fc;
+        }
+
+        .dark-theme .navbar {
+            background: linear-gradient(135deg, #2c2c2c, #0a0a0a);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .dark-theme #sidebar-wrapper {
+            background: linear-gradient(180deg, #2c2c2c, #0a0a0a);
+        }
+
+        .dark-theme .nav-link {
+            color: rgba(248,249,252,0.8) !important;
+        }
+
+        .dark-theme .nav-link:hover {
+            color: #f8f9fc !important;
+        }
+
+        .dark-theme .card {
+            background-color: #2c2c2c;
+            color: #f8f9fc;
+            box-shadow: 0 0.15rem 1.75rem 0 rgba(0,0,0,0.3);
+        }
+
+        .dark-theme .card-header {
+             background-color: #3a3a3a;
+             border-bottom: 1px solid #4a4a4a;
+        }
+
+        .dark-theme .card-footer {
+             background-color: #3a3a3a;
+             border-top: 1px solid #4a4a4a;
+        }
+
+        .dark-theme .list-group-item {
+             background-color: #2c2c2c;
+             color: #f8f9fc;
+        }
+
+        .dark-theme .list-group-item:hover {
+             background-color: #3a3a3a;
+        }
+        
+        .dark-theme .sidebar-item {
+            color: rgba(248,249,252,0.8);
+        }
+        
+        .dark-theme .sidebar-item:hover, 
+        .dark-theme .sidebar-item.active {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: #f8f9fc;
+        }
+
+        .dark-theme .form-control {
+            background-color: #3a3a3a;
+            color: #f8f9fc;
+            border: 1px solid #4a4a4a;
+        }
+
+        .dark-theme .form-control:focus {
+            border-color: #5a5a5a;
+            box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.25);
+        }
+        
+        .dark-theme .dropdown-menu {
+            background-color: #2c2c2c;
+            border: 1px solid #3a3a3a;
+        }
+        
+        .dark-theme .dropdown-header {
+            background-color: #3a3a3a;
+            color: #f8f9fc;
+            border-bottom: 1px solid #4a4a4a;
+        }
+        
+        .dark-theme .dropdown-item {
+            color: #f8f9fc;
+        }
+        
+        .dark-theme .dropdown-item:hover {
+            background-color: #3a3a3a;
+            color: #f8f9fc;
+        }
+        
+        .dark-theme .dropdown-divider {
+            border-top: 1px solid #4a4a4a;
+        }
+
+        .dark-theme .alert-info {
+            color: #f8f9fc;
+            background-color: #2c2c2c;
+            border-color: #3a3a3a;
+        }
+        .dark-theme .alert-warning {
+            color: #f8f9fc;
+            background-color: #4a3a0a;
+            border-color: #6a5a1a;
+        }
+        .dark-theme .alert-danger {
+            color: #f8f9fc;
+            background-color: #4a2a2a;
+            border-color: #6a3a3a;
+        }
+        .dark-theme .alert-success {
+            color: #f8f9fc;
+            background-color: #2a4a2a;
+            border-color: #3a6a3a;
+        }
+
+        .dark-theme .badge-primary {
+             background-color: #5a5a5a !important;
+        }
+        .dark-theme .badge-secondary {
+             background-color: #6a6a6a !important;
+        }
+        .dark-theme .badge-warning {
+             background-color: #7a5a0a !important;
+        }
+        .dark-theme .badge-danger {
+             background-color: #7a0a0a !important;
+        }
+        .dark-theme .badge-success {
+             background-color: #0a7a0a !important;
+        }
+        .dark-theme .badge-info {
+             background-color: #0a5a7a !important;
+        }
+        
+        /* Mobil Uyumluluk için Koyu Tema Ayarları */
+        @media (max-width: 991.98px) {
+            .dark-theme #wrapper.toggled::after {
+                background-color: rgba(0,0,0,0.7);
+            }
+        }
+    </style>
+    <style>
+        .navbar, .navbar * { z-index: 1050 !important; }
+        .dropdown-menu { z-index: 2000 !important; }
+        body, html { overflow-x: auto !important; }
+    </style>
+    {% block styles %}{% endblock %}
+    {% block extra_styles %}{% endblock %}
+    <!-- JavaScript Kütüphaneleri -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    
+    <!-- Zaman Güncelleme Scripti -->
+    <script>
+        function updateDateTime() {
+            const now = new Date();
+            const timeElement = document.getElementById('current-time');
+            const dateElement = document.getElementById('current-date');
+            
+            if (timeElement && dateElement) {
+                // Saat formatı
+                const hours = now.getHours().toString().padStart(2, '0');
+                const minutes = now.getMinutes().toString().padStart(2, '0');
+                const seconds = now.getSeconds().toString().padStart(2, '0');
+                timeElement.textContent = `${hours}:${minutes}:${seconds}`;
+                
+                // Tarih formatı
+                const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+                dateElement.textContent = now.toLocaleDateString('tr-TR', options);
+            }
+        }
+        
+        // Sayfa yüklendiğinde ve her saniye güncelle
+        document.addEventListener('DOMContentLoaded', function() {
+            updateDateTime();
+            setInterval(updateDateTime, 1000);
+        });
+    </script>
+    
+    <!-- Tema ve Mobil Uyumluluk Scriptleri -->
+    <script>
+    (function() {
+        // Tema ayarlarını yükle
+        try {
+            var theme = localStorage.getItem('theme') || 'light';
+            if (theme === 'dark') {
+                document.documentElement.classList.add('dark-theme');
+                document.body.classList.add('dark-theme');
+                if (document.getElementById('themeToggle')) {
+                    document.getElementById('themeToggle').innerHTML = '<i class="fas fa-sun"></i>';
+                }
+            } else {
+                document.documentElement.classList.remove('dark-theme');
+                document.body.classList.remove('dark-theme');
+                if (document.getElementById('themeToggle')) {
+                    document.getElementById('themeToggle').innerHTML = '<i class="fas fa-moon"></i>';
+                }
+            }
+        } catch(e) {}
+        
+        // Sayfa yüklendikten sonra çalışacak kodlar
+        document.addEventListener('DOMContentLoaded', function() {
+            // Sidebar toggle butonu
+            var sidebarToggle = document.getElementById('sidebarToggle');
+            var sidebar = document.getElementById('sidebar-wrapper');
+            var mainContent = document.getElementById('main-content-col');
+            
+            if (sidebarToggle && sidebar) {
+                sidebarToggle.addEventListener('click', function() {
+                    sidebar.classList.toggle('sidebar-collapsed');
+                    if (mainContent) {
+                        mainContent.classList.toggle('sidebar-collapsed');
+                    }
+                    
+                    // Kullanıcı tercihini local storage'a kaydet
+                    const isCollapsed = sidebar.classList.contains('sidebar-collapsed');
+                    localStorage.setItem('sidebarCollapsed', isCollapsed);
+                });
+                
+                // Sayfa yüklendiğinde kullanıcı tercihini kontrol et
+                const savedState = localStorage.getItem('sidebarCollapsed');
+                if (savedState === 'true') {
+                    sidebar.classList.add('sidebar-collapsed');
+                    if (mainContent) {
+                        mainContent.classList.add('sidebar-collapsed');
+                    }
+                }
+            }
+            
+            // Tema değiştirme butonu
+            var themeToggle = document.getElementById('themeToggle');
+            if (themeToggle) {
+                themeToggle.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    if (document.body.classList.contains('dark-theme')) {
+                        document.documentElement.classList.remove('dark-theme');
+                        document.body.classList.remove('dark-theme');
+                        localStorage.setItem('theme', 'light');
+                        themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+                    } else {
+                        document.documentElement.classList.add('dark-theme');
+                        document.body.classList.add('dark-theme');
+                        localStorage.setItem('theme', 'dark');
+                        themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+                    }
+                });
+            }
+            
+            // Mobil cihazlarda sidebar'ı otomatik kapat
+            function checkWidth() {
+                if (window.innerWidth < 992 && sidebar) {
+                    sidebar.classList.add('sidebar-collapsed');
+                    if (mainContent) {
+                        mainContent.classList.add('sidebar-collapsed');
+                    }
+                }
+            }
+            
+            // Sayfa yüklendiğinde ve boyutu değiştiğinde kontrol et
+            window.addEventListener('resize', checkWidth);
+            checkWidth();
+        });
+    })();
+    </script>
+</head>
+<body style="padding-top: 56px;">
+    <!-- Header ve Navbar -->
+    {% include 'components/navbar.html' %}
+    
+    <div class="stars">
+        <div class="star star-1"></div>
+        <div class="star star-2"></div>
+        <div class="star star-3"></div>
+        <div class="star star-4"></div>
+        <div class="star star-5"></div>
+        <div class="star star-6"></div>
+        <div class="star star-7"></div>
+    </div>
+    
+    <div class="container-fluid p-0 main-content">
+        <div id="wrapper">
+            {% if show_sidebar %}
+            <div class="sidebar-wrapper" id="sidebar-wrapper">
+                {% include 'components/sidebar_main.html' %}
+            </div>
+            {% endif %}
+            <div class="main-content-area" id="main-content-col">
+                <div class="inner-content-wrapper">
+                    {% block page_content %}
+                        {% block content %}{% endblock %}
+                    {% endblock %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="miniPomodoro" class="mini-pomodoro" style="display: none; min-height: 120px; padding-bottom: 10px; overflow: visible !important;">
+        <div class="mini-pomodoro-header">
+            <span id="miniTimerMode">Odaklanma</span>
+            <div class="mini-pomodoro-controls">
+                <button id="miniToggleBtn" class="mini-btn"><i class="fas fa-play"></i></button>
+                <button id="miniMinimizeBtn" class="mini-btn"><i class="fas fa-minus"></i></button>
+                <button id="miniCloseBtn" class="mini-btn"><i class="fas fa-times"></i></button>
+            </div>
+        </div>
+        <div id="miniTimerDisplay" class="mini-timer">25:00</div>
+        <div class="mini-progress">
+            <div id="miniProgressBar" class="mini-progress-bar"></div>
+        </div>
+    </div>
+
+    <div id="miniPomodoroMinimized" class="mini-pomodoro-minimized" style="display: none;">
+        <button id="miniRestoreBtn" class="mini-btn"><i class="fas fa-clock"></i></button>
+    </div>
+
+    <style>
+        /* Mini Pomodoro Styles */
+        .mini-pomodoro {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 200px;
+            background: rgba(35, 41, 70, 0.95);
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            z-index: 3000 !important;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(48, 232, 232, 0.3);
+        }
+
+        .mini-pomodoro-minimized {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 40px;
+            height: 40px;
+            background: rgba(35, 41, 70, 0.95);
+            border-radius: 50%;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            z-index: 3000 !important;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid rgba(48, 232, 232, 0.3);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .mini-pomodoro-minimized:hover {
+            transform: scale(1.1);
+            background: rgba(48, 232, 232, 0.2);
+        }
+
+        .mini-pomodoro-minimized .mini-btn {
+            color: #30E8E8;
+            font-size: 1.2rem;
+                }
+
+        .mini-pomodoro-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 12px;
+            background: rgba(48, 232, 232, 0.1);
+            border-bottom: 1px solid rgba(48, 232, 232, 0.2);
+    }
+
+        #miniTimerMode {
+            color: #30E8E8;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .mini-pomodoro-controls {
+        display: flex;
+            gap: 5px;
+    }
+
+        .mini-btn {
+            background: none;
+            border: none;
+            color: #fff;
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+    }
+
+        .mini-btn:hover {
+            background: rgba(48, 232, 232, 0.2);
+            color: #30E8E8;
+        }
+
+        .mini-timer {
+            text-align: center;
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #fff;
+            padding: 10px;
+            text-shadow: 0 0 10px rgba(48, 232, 232, 0.3);
+        }
+
+        .mini-progress {
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .mini-progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #30E8E8, #536976);
+            width: 0%;
+            transition: width 1s linear;
+    }
+    </style>
+
+    <script>
+        // --- Unified Pomodoro Timer Logic ---
+        let timerInterval = null;
+        let timerState = 'work'; // 'work', 'shortBreak', 'longBreak'
+        let timerTimeLeft = 0;
+        let pomodoroCount = 0;
+        let timerRunning = false; // Track if timer is actively running
+
+        function getPomodoroSettings() {
+            const defaults = { workDuration: 25, shortBreakDuration: 5, longBreakDuration: 15, pomodorosUntilLongBreak: 4, autoStartBreaks: true, autoStartPomodoros: true, playSound: true, showNotifications: true };
+            try {
+                const settings = JSON.parse(localStorage.getItem('pomodoroSettings'));
+                return settings ? { ...defaults, ...settings } : defaults;
+            } catch { return defaults; }
+        }
+
+        function updateTimerDisplay() {
+            const min = String(Math.floor(timerTimeLeft / 60)).padStart(2, '0');
+            const sec = String(timerTimeLeft % 60).padStart(2, '0');
+            const timeString = `${min}:${sec}`;
+
+            // Update main timer display if it exists on the page
+            const mainTimerDisplay = document.getElementById('timerDisplay');
+            if (mainTimerDisplay) {
+                mainTimerDisplay.textContent = timeString;
+            }
+
+            // Update mini timer display
+            const miniTimerDisplay = document.getElementById('miniTimerDisplay');
+            if (miniTimerDisplay) {
+                miniTimerDisplay.textContent = timeString;
+                 // Update mini timer progress bar
+                const miniProgressBar = document.getElementById('miniProgressBar');
+                if (miniProgressBar) {
+                     const settings = getPomodoroSettings();
+                     let totalTime;
+                     if (timerState === 'work') totalTime = settings.workDuration * 60;
+                     else if (timerState === 'shortBreak') totalTime = settings.shortBreakDuration * 60;
+                     else totalTime = settings.longBreakDuration * 60;
+
+                     const progress = ((totalTime - timerTimeLeft) / totalTime) * 100;
+                     miniProgressBar.style.width = `${progress}%`;
+                }
+            }
+             // Update main timer mode title if it exists
+            const mainTimerModeTitle = document.getElementById('timerModeTitle');
+             let title = '';
+             if (timerState === 'work') title = 'Odaklanma Zamanı';
+             else if (timerState === 'shortBreak') title = 'Mola Zamanı';
+             else title = 'Uzun Mola Zamanı';
+            if (mainTimerModeTitle) {
+                 mainTimerModeTitle.textContent = title;
+             }
+            // Update mini timer mode text
+            const miniTimerMode = document.getElementById('miniTimerMode');
+             if (miniTimerMode) {
+                let modeText = '';
+                if (timerState === 'work') modeText = 'Odaklanma';
+                else if (timerState === 'shortBreak') modeText = 'Kısa Mola';
+                else modeText = 'Uzun Mola';
+                 miniTimerMode.textContent = modeText;
+             }
+
+        }
+
+        function savePomodoroState() {
+            localStorage.setItem('pomodoroTimer', JSON.stringify({
+                timerState,
+                timerTimeLeft,
+                pomodoroCount,
+                running: !!timerInterval // Save if interval is active
+            }));
+        }
+
+        function loadPomodoroState() {
+            const state = JSON.parse(localStorage.getItem('pomodoroTimer'));
+            const settings = getPomodoroSettings();
+            if (state) {
+                timerState = state.timerState || 'work';
+                if (state.timerTimeLeft !== undefined && state.timerTimeLeft !== null) {
+                    timerTimeLeft = state.timerTimeLeft;
+                } else {
+                     // If timeleft is missing, reset based on state
+                    if (timerState === 'work') timerTimeLeft = settings.workDuration * 60;
+                    else if (timerState === 'shortBreak') timerTimeLeft = settings.shortBreakDuration * 60;
+                    else timerTimeLeft = settings.longBreakDuration * 60;
+                }
+
+                pomodoroCount = state.pomodoroCount || 0;
+                 timerRunning = state.running || false;
+
+                updateTimerDisplay(); // Update displays immediately on load
+
+                if (timerRunning) {
+                    startTimer(true); // true: automatic start after load
+                     if (typeof showMiniPomodoro === 'function') {
+                         showMiniPomodoro(); // Ensure mini timer is shown if it was running
+                     }
+                }
+
+            } else {
+                // Default state if no saved state
+                timerState = 'work';
+                timerTimeLeft = settings.workDuration * 60;
+                pomodoroCount = 0;
+                timerRunning = false;
+                updateTimerDisplay();
+            }
+        }
+
+        function startTimer(auto = false) {
+            if (timerInterval) clearInterval(timerInterval);
+            timerRunning = true;
+            const settings = getPomodoroSettings();
+
+            // Ensure timerTimeLeft is set if starting fresh in a state
+            if (timerTimeLeft <= 0) {
+                 if (timerState === 'work') timerTimeLeft = settings.workDuration * 60;
+                 else if (timerState === 'shortBreak') timerTimeLeft = settings.shortBreakDuration * 60;
+                 else timerTimeLeft = settings.longBreakDuration * 60;
+            }
+
+            timerInterval = setInterval(() => {
+                if (timerTimeLeft > 0) {
+                    timerTimeLeft--;
+                    updateTimerDisplay();
+                    savePomodoroState();
+                } else {
+                    clearInterval(timerInterval);
+                    timerInterval = null;
+                    timerRunning = false;
+                    savePomodoroState();
+
+                    if (timerState === 'work') {
+                        pomodoroCount++;
+                        if (pomodoroCount % settings.pomodorosUntilLongBreak === 0) {
+                            timerState = 'longBreak';
+                        } else {
+                            timerState = 'shortBreak';
+                        }
+                    } else {
+                        // After a break, go back to work
+                        timerState = 'work';
+                    }
+
+                    timerTimeLeft = 0; // Reset time for the *next* session
+                    updateTimerDisplay(); // Update display to 00:00 and new mode
+                    notifyPomodoro();
+
+                    // Auto-start next session if enabled
+                    setTimeout(() => {
+                        const currentSettings = getPomodoroSettings(); // Get latest settings
+                        if ((timerState !== 'work' && currentSettings.autoStartBreaks) || (timerState === 'work' && currentSettings.autoStartPomodoros)) {
+                             startTimer(true); // auto start
+                        }
+                    }, 1000); // Wait a moment before starting next session
+                }
+            }, 1000);
+
+            if (!auto) savePomodoroState(); // Save state immediately if not auto-starting
+             // Update play/pause button text if main timer controls exist
+             const startBtn = document.getElementById('startBtn');
+             const stopBtn = document.getElementById('stopBtn');
+             const skipBtn = document.getElementById('skipBtn');
+             if(startBtn) startBtn.style.display = 'none';
+             if(stopBtn) stopBtn.style.display = 'inline-block';
+             if(skipBtn) skipBtn.style.display = 'inline-block';
+             // Update mini timer play/pause button icon
+             const miniToggleBtn = document.getElementById('miniToggleBtn');
+             if (miniToggleBtn) miniToggleBtn.innerHTML = '<i class="fas fa-pause"></i>';
+        }
+
+        function stopTimer() {
+            if (timerInterval) clearInterval(timerInterval);
+            timerInterval = null;
+            timerRunning = false;
+            savePomodoroState();
+             // Update play/pause button text if main timer controls exist
+             const startBtn = document.getElementById('startBtn');
+             const stopBtn = document.getElementById('stopBtn');
+             const skipBtn = document.getElementById('skipBtn');
+             if(startBtn) startBtn.style.display = 'inline-block';
+             if(stopBtn) stopBtn.style.display = 'none';
+             if(skipBtn) skipBtn.style.display = 'none'; // Hide skip button when stopped
+             // Update mini timer play/pause button icon
+             const miniToggleBtn = document.getElementById('miniToggleBtn');
+             if (miniToggleBtn) miniToggleBtn.innerHTML = '<i class="fas fa-play"></i>';
+        }
+
+        function resetTimer() {
+            if (timerInterval) clearInterval(timerInterval);
+            timerInterval = null;
+            timerRunning = false;
+            const settings = getPomodoroSettings();
+            timerState = 'work'; // Always reset to work state
+            timerTimeLeft = settings.workDuration * 60; // Reset time to work duration
+            pomodoroCount = 0;
+            updateTimerDisplay();
+            savePomodoroState();
+            // Update main timer control buttons
+             const startBtn = document.getElementById('startBtn');
+             const stopBtn = document.getElementById('stopBtn');
+             const resetBtn = document.getElementById('resetBtn');
+             const saveBtn = document.getElementById('saveBtn');
+             const skipBtn = document.getElementById('skipBtn');
+
+             if(startBtn) startBtn.style.display = 'inline-block';
+             if(stopBtn) stopBtn.style.display = 'none';
+             if(skipBtn) skipBtn.style.display = 'none';
+
+             // Update mini timer buttons
+            const miniToggleBtn = document.getElementById('miniToggleBtn');
+            if (miniToggleBtn) miniToggleBtn.innerHTML = '<i class="fas fa-play"></i>';
+            // Ensure mini pomodoro is visible after reset if needed, though typically reset means stopping
+             // if (typeof showMiniPomodoro === 'function') {
+             //     showMiniPomodoro();
+             // }
+        }
+
+        function skipTimer() {
+            if (timerInterval) clearInterval(timerInterval);
+            timerInterval = null;
+            timerRunning = false;
+            const settings = getPomodoroSettings();
+
+            if (timerState === 'work') {
+                pomodoroCount++;
+                if (pomodoroCount % settings.pomodorosUntilLongBreak === 0) {
+                    timerState = 'longBreak';
+                } else {
+                    timerState = 'shortBreak';
+                }
+            } else {
+                // If skipping a break, go back to work
+                timerState = 'work';
+            }
+            timerTimeLeft = 0; // Reset time for the *next* session
+            updateTimerDisplay(); // Update display to 00:00 and new mode
+            savePomodoroState();
+
+             // Auto-start next session if enabled
+             setTimeout(() => {
+                 const currentSettings = getPomodoroSettings(); // Get latest settings
+                 if ((timerState !== 'work' && currentSettings.autoStartBreaks) || (timerState === 'work' && currentSettings.autoStartPomodoros)) {
+                     startTimer(true); // auto start
+                 } else {
+                     // If not auto-starting, update buttons to stopped state
+                     const startBtn = document.getElementById('startBtn');
+                     const stopBtn = document.getElementById('stopBtn');
+                     const skipBtn = document.getElementById('skipBtn');
+                     if(startBtn) startBtn.style.display = 'inline-block';
+                     if(stopBtn) stopBtn.style.display = 'none';
+                     if(skipBtn) skipBtn.style.display = 'none';
+                      // Update mini timer play/pause button icon
+                     const miniToggleBtn = document.getElementById('miniToggleBtn');
+                     if (miniToggleBtn) miniToggleBtn.innerHTML = '<i class="fas fa-play"></i>';
+                 }
+             }, 1000); // Wait a moment
+
+        }
+
+        // --- Settings and Save Functions (from timer.html, kept as is) ---
+
+        function notifyPomodoro() {
+            const settings = getPomodoroSettings();
+            if (settings.playSound) {
+                // Use a relative path for local audio file
+                const audio = new Audio('/static/sounds/notification.mp3'); // Assuming a local notification sound
+                audio.play().catch(e => console.error("Error playing sound:", e)); // Add catch for browser restrictions
+            }
+            if (settings.showNotifications && 'Notification' in window) {
+                if (Notification.permission === 'granted') {
+                    new Notification('Pomodoro Zamanı!', { body: timerState === 'work' ? 'Çalışma zamanı!' : 'Mola zamanı!' });
+                } else if (Notification.permission !== 'denied') {
+                    Notification.requestPermission();
+                }
+            }
+        }
+
+        function saveSettings() {
+            const settings = {
+                workDuration: parseInt(document.getElementById('workDuration').value),
+                shortBreakDuration: parseInt(document.getElementById('shortBreakDuration').value),
+                longBreakDuration: parseInt(document.getElementById('longBreakDuration').value),
+                pomodorosUntilLongBreak: parseInt(document.getElementById('pomodorosUntilLongBreak').value),
+                autoStartBreaks: document.getElementById('autoStartBreaks').checked,
+                autoStartPomodoros: document.getElementById('autoStartPomodoros').checked,
+                playSound: document.getElementById('playSound').checked,
+                showNotifications: document.getElementById('showNotifications').checked
+            };
+            localStorage.setItem('pomodoroSettings', JSON.stringify(settings));
+             alert('Ayarlar başarıyla kaydedildi!');
+             // After saving settings, reset timer to apply new durations
+             resetTimer();
+        }
+
+        // This function is specific to the timer page and interacts with the backend
+        function saveTimer() {
+             const settings = getPomodoroSettings();
+             let totalSeconds = 0;
+             // Calculate time spent in the *current* state before saving
+             let durationInState = 0;
+             if (timerState === 'work') durationInState = settings.workDuration * 60;
+             else if (timerState === 'shortBreak') durationInState = settings.shortBreakDuration * 60;
+             else durationInState = settings.longBreakDuration * 60;
+
+             totalSeconds = durationInState - timerTimeLeft;
+
+            if (totalSeconds <= 0 || !timerRunning) { // Only save if time has elapsed and timer was running
+                 alert('Kaydedilecek bir süre yok veya zamanlayıcı çalışmıyor!');
+                 return;
+            }
+            fetch('/save_timer', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                },
+                body: JSON.stringify({ seconds: totalSeconds })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Çalışma süren başarıyla kaydedildi!');
+                     // Optionally reset or continue timer after saving
+                     // resetTimer(); // Or keep running?
+                } else {
+                    alert('Süre kaydedilirken bir hata oluştu.');
+                }
+            });
+        }
+
+        // --- Mini Pomodoro Visibility Functions ---
+
+        function showMiniPomodoro() {
+             const miniPomodoro = document.getElementById('miniPomodoro');
+             const miniPomodoroMinimized = document.getElementById('miniPomodoroMinimized');
+            if (miniPomodoro) miniPomodoro.style.display = 'block';
+             if (miniPomodoroMinimized) miniPomodoroMinimized.style.display = 'none';
+        }
+
+        function hideMiniPomodoro() {
+            const miniPomodoro = document.getElementById('miniPomodoro');
+            const miniPomodoroMinimized = document.getElementById('miniPomodoroMinimized');
+             if (miniPomodoro) miniPomodoro.style.display = 'none';
+             if (miniPomodoroMinimized) miniPomodoroMinimized.style.display = 'none'; // Also hide minimized
+             stopTimer(); // Stop timer when hidden
+        }
+
+        function minimizeMiniPomodoro() {
+             const miniPomodoro = document.getElementById('miniPomodoro');
+             const miniPomodoroMinimized = document.getElementById('miniPomodoroMinimized');
+             if (miniPomodoro) miniPomodoro.style.display = 'none';
+             if (miniPomodoroMinimized) miniPomodoroMinimized.style.display = 'flex';
+        }
+
+        function restoreMiniPomodoro() {
+             const miniPomodoro = document.getElementById('miniPomodoro');
+             const miniPomodoroMinimized = document.getElementById('miniPomodoroMinimized');
+             if (miniPomodoroMinimized) miniPomodoroMinimized.style.display = 'none';
+             if (miniPomodoro) miniPomodoro.style.display = 'block';
+        }
+
+        // --- Initialize and Event Listeners ---
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load settings and previous timer state on page load
+             loadPomodoroState();
+             // Update display based on loaded state
+             updateTimerDisplay();
+
+            // Attach event listeners for Mini Pomodoro Controls
+            const miniToggleBtn = document.getElementById('miniToggleBtn');
+            const miniCloseBtn = document.getElementById('miniCloseBtn');
+            const miniMinimizeBtn = document.getElementById('miniMinimizeBtn');
+            const miniRestoreBtn = document.getElementById('miniRestoreBtn');
+            const miniResetBtn = document.getElementById('miniResetBtn'); // Assuming a reset button for mini timer
+            const miniSkipBtn = document.getElementById('miniSkipBtn'); // Assuming a skip button for mini timer
+
+            if (miniToggleBtn) miniToggleBtn.addEventListener('click', function() { timerRunning ? stopTimer() : startTimer(); });
+            if (miniCloseBtn) miniCloseBtn.addEventListener('click', hideMiniPomodoro);
+            if (miniMinimizeBtn) miniMinimizeBtn.addEventListener('click', minimizeMiniPomodoro);
+            if (miniRestoreBtn) miniRestoreBtn.addEventListener('click', restoreMiniPomodoro);
+            if (miniResetBtn) miniResetBtn.addEventListener('click', resetTimer);
+            if (miniSkipBtn) miniSkipBtn.addEventListener('click', skipTimer);
+
+            // Attach event listeners for Main Timer Controls (only if on timer page)
+            const startBtn = document.getElementById('startBtn');
+            const stopBtn = document.getElementById('stopBtn');
+            const resetBtn = document.getElementById('resetBtn');
+            const saveBtn = document.getElementById('saveBtn'); // Assuming a save button for main timer
+            const skipBtn = document.getElementById('skipBtn'); // Assuming a skip button for main timer
+            const saveSettingsBtn = document.querySelector('#pomodoroSettingsForm button[onclick="saveSettings()"]'); // Assuming a save settings button
+
+            if (startBtn) startBtn.addEventListener('click', function() { startTimer(); showMiniPomodoro(); });
+            if (stopBtn) stopBtn.addEventListener('click', stopTimer);
+            if (resetBtn) resetBtn.addEventListener('click', resetTimer);
+             if (saveBtn) saveBtn.addEventListener('click', saveTimer);
+             if (skipBtn) skipBtn.addEventListener('click', skipTimer);
+             if (saveSettingsBtn) saveSettingsBtn.addEventListener('click', saveSettings);
+
+             // Initial button states based on loaded state
+             if (timerRunning) {
+                 if(startBtn) startBtn.style.display = 'none';
+                 if(stopBtn) stopBtn.style.display = 'inline-block';
+                 if(skipBtn) skipBtn.style.display = 'inline-block';
+                 const miniToggleBtn = document.getElementById('miniToggleBtn');
+                 if (miniToggleBtn) miniToggleBtn.innerHTML = '<i class="fas fa-pause"></i>';
+             } else {
+                 if(startBtn) startBtn.style.display = 'inline-block';
+                 if(stopBtn) stopBtn.style.display = 'none';
+                 if(skipBtn) skipBtn.style.display = 'none';
+                 const miniToggleBtn = document.getElementById('miniToggleBtn');
+                 if (miniToggleBtn) miniToggleBtn.innerHTML = '<i class="fas fa-play"></i>';
+             }
+
+             // Ensure mini pomodoro state is consistent on load
+             const savedState = JSON.parse(localStorage.getItem('pomodoroTimer'));
+             if (savedState && savedState.running) {
+                 showMiniPomodoro();
+             } else {
+                 hideMiniPomodoro(); // Hide mini timer if not running on load
+             }
+
+
+        });
+
+        // Expose core timer functions globally if needed by other scripts (e.g., timer.html)
+        window.startTimer = startTimer;
+        window.stopTimer = stopTimer;
+        window.resetTimer = resetTimer;
+        window.skipTimer = skipTimer;
+        window.saveSettings = saveSettings;
+        window.saveTimer = saveTimer;
+        window.showMiniPomodoro = showMiniPomodoro;
+        window.hideMiniPomodoro = hideMiniPomodoro;
+        window.minimizeMiniPomodoro = minimizeMiniPomodoro;
+        window.restoreMiniPomodoro = restoreMiniPomodoro;
+
+    </script>
+    {% block scripts %}{% endblock %}
+    <script>
+(function(){if(!window.chatbase||window.chatbase("getState")!=="initialized"){window.chatbase=(...arguments)=>{if(!window.chatbase.q){window.chatbase.q=[]}window.chatbase.q.push(arguments)};window.chatbase=new Proxy(window.chatbase,{get(target,prop){if(prop==="q"){return target.q}return(...args)=>target(prop,...args)}})}const onLoad=function(){const script=document.createElement("script");script.src="https://www.chatbase.co/embed.min.js";script.id="x3OBgZhqJWVAgJWH9lBLG";script.domain="www.chatbase.co";document.body.appendChild(script)};if(document.readyState==="complete"){onLoad()}else{window.addEventListener("load",onLoad)}})();
+</script>
+</body>
+</html>

@@ -1,0 +1,284 @@
+/* General Styles */
+body {
+    background-color: #f8f9fa;
+}
+
+.navbar {
+    box-shadow: 0 2px 4px rgba(0,0,0,.1);
+}
+
+.card {
+    box-shadow: 0 2px 4px rgba(0,0,0,.05);
+    border: none;
+    margin-bottom: 1.5rem;
+}
+
+.card-header {
+    background-color: #fff;
+    border-bottom: 1px solid rgba(0,0,0,.125);
+}
+
+/* Dashboard Styles */
+.quick-actions .btn {
+    margin-bottom: 0.5rem;
+}
+
+.stats-card {
+    background-color: #fff;
+}
+
+/* Table Styles */
+.table th {
+    background-color: #f8f9fa;
+    border-bottom: 2px solid #dee2e6;
+}
+
+.table td {
+    vertical-align: middle;
+}
+
+/* Button Styles */
+.btn-group .btn {
+    margin-right: 0.25rem;
+}
+
+/* Modal Styles */
+.modal-content {
+    border: none;
+    box-shadow: 0 0.5rem 1rem rgba(0,0,0,.15);
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .card-body {
+        padding: 1rem;
+    }
+    
+    .table-responsive {
+        margin-bottom: 1rem;
+    }
+}
+
+/* Custom Badge Styles */
+.badge {
+    padding: 0.5em 0.75em;
+    font-weight: 500;
+}
+
+/* Form Styles */
+.form-control:focus {
+    border-color: #80bdff;
+    box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+html.dark-theme, body.dark-theme {
+    background-color: #181a1b !important;
+    color: #e0e0e0 !important;
+}
+html.dark-theme .card,
+body.dark-theme .card,
+html.dark-theme .navbar,
+body.dark-theme .navbar,
+html.dark-theme .modal-content,
+body.dark-theme .modal-content {
+    background-color: #23272b !important;
+    color: #e0e0e0 !important;
+}
+html.dark-theme .card-header,
+body.dark-theme .card-header,
+html.dark-theme .card-body,
+body.dark-theme .card-body {
+    background-color: #23272b !important;
+    color: #e0e0e0 !important;
+}
+html.dark-theme .form-control,
+body.dark-theme .form-control {
+    background-color: #23272b !important;
+    color: #e0e0e0 !important;
+    border-color: #444;
+}
+html.dark-theme .btn-primary,
+body.dark-theme .btn-primary,
+html.dark-theme .btn-success,
+body.dark-theme .btn-success,
+html.dark-theme .btn-secondary,
+body.dark-theme .btn-secondary {
+    color: #fff !important;
+}
+html.dark-theme .alert,
+body.dark-theme .alert {
+    background-color: #23272b !important;
+    color: #e0e0e0 !important;
+    border-color: #444 !important;
+}
+html.dark-theme .table th,
+body.dark-theme .table th,
+html.dark-theme .table td,
+body.dark-theme .table td {
+    background-color: #23272b !important;
+    color: #e0e0e0 !important;
+}
+
+/* Yan Menü Stili */
+.side-menu {
+    background-color: rgba(26, 20, 64, 0.8);
+    border-right: 1px solid rgba(106, 55, 181, 0.3);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(5px);
+    min-height: 100vh;
+    padding: 0;
+    transition: all 0.3s ease;
+    width: 100%;
+    position: relative;
+    z-index: 1031;
+}
+
+.welcome-bg {
+    background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%);
+    min-height: 100vh; /* Sayfanın tamamını kaplaması için */
+    display: flex; /* İçeriği ortalamak için flexbox kullan */
+    align-items: center; /* Dikeyde ortala */
+    justify-content: center; /* Yatayda ortala */
+    padding: 20px; /* Kenar boşluğu ekle */
+}
+
+.side-menu .nav-link:hover {
+    background-color: rgba(46, 205, 200, 0.2);
+    color: #30E8E8;
+    transform: translateX(5px);
+    box-shadow: inset 4px 0 0 #30E8E8;
+}
+
+.side-menu .nav-link.active {
+    background-color: rgba(106, 55, 181, 0.3);
+    color: #30E8E8;
+    box-shadow: inset 4px 0 0 #30E8E8;
+}
+
+.side-menu .nav-link i {
+    margin-right: 10px;
+    width: 24px;
+    text-align: center;
+    font-size: 1.1rem;
+}
+
+/* Sidebar-collapsed durumunda ikonları ortalama */
+.sidebar-collapsed .side-menu .nav-link {
+    padding: 1rem 0.8rem;
+    justify-content: center;
+}
+
+.sidebar-collapsed .side-menu .nav-link i {
+    margin-right: 0;
+}
+
+/* Özel sekme stilleri */
+.side-menu .nav-item:first-child .nav-link {
+    background: linear-gradient(90deg, rgba(106, 55, 181, 0.5), rgba(26, 20, 64, 0.8));
+}
+
+.side-menu .nav-item:first-child .nav-link:hover {
+    background: linear-gradient(90deg, rgba(46, 205, 200, 0.5), rgba(26, 20, 64, 0.8));
+}
+
+/* Sekme animasyonu */
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+.side-menu .nav-link:active {
+    animation: pulse 0.3s ease-in-out;
+}
+
+/* Sidebar ve içerik alanı geçiş animasyonu */
+.sidebar-wrapper {
+    transition: all 0.3s ease-in-out;
+    width: 250px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    min-height: 100vh;
+    z-index: 1030;
+    overflow: hidden;
+}
+
+.main-content-area {
+    transition: all 0.3s ease-in-out;
+    margin-left: 250px;
+    width: calc(100% - 250px);
+    position: relative;
+    z-index: 1020;
+}
+
+.sidebar-wrapper.sidebar-collapsed {
+    left: -280px;
+    visibility: hidden;
+}
+
+.main-content-area.sidebar-collapsed {
+    margin-left: 0;
+    width: 100%;
+}
+
+/* İçerik konteynerı */
+.content-container {
+    width: 100%;
+    /* max-width: 1200px; */ /* Sayfa içeriğinin menü dışında kalan tüm alanı kaplaması için max-width kaldırıldı */
+    margin: 0; /* Ortalamayı kaldır */
+    padding: 15px; /* Her yönden 15px boşluk */
+}
+
+/* Hamburger menü responsive ayarları */
+@media (max-width: 768px) {
+    .sidebar-wrapper {
+        left: -280px;
+        visibility: hidden;
+    }
+    
+    .main-content-area {
+        margin-left: 0;
+        width: 100%;
+    }
+    
+    .sidebar-wrapper.sidebar-visible {
+        left: 0;
+        visibility: visible;
+    }
+}
+
+/* Hamburger menü */
+.hamburger-menu {
+    position: fixed;
+    z-index: 1040;
+    transition: all 0.3s ease-in-out;
+}
+
+.header-style-1 {
+    color: black;
+    text-shadow: 1px 1px 2px white;
+}
+
+.welcome-bg {
+    background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%);
+    min-height: 100vh; /* Sayfanın tamamını kaplaması için */
+} 

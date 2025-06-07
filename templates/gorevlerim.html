@@ -1,0 +1,653 @@
+{% extends "hedefleyici.html" %}
+
+{% block title %}Görevlerim{% endblock %}
+
+{% block styles %}
+{{ super() }}
+<style>
+    /* Görevlerim sayfasına özel stiller */
+    h2 {
+        color: #232323;
+        font-size: 2.2rem;
+        font-weight: 800;
+        margin-bottom: 0.8rem;
+        margin-top: 2.5rem;
+        text-shadow: 0 0 15px #fff, 0 0 20px #fff;
+    }
+    
+    .card {
+        background-color: rgba(26, 20, 64, 0.8);
+        border: 1px solid rgba(106, 55, 181, 0.3);
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        transition: all 0.3s ease;
+        color: #FFF;
+        backdrop-filter: blur(5px);
+    }
+    
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 35px rgba(46, 205, 200, 0.3);
+        border-color: var(--accent-turquoise);
+    }
+    
+    .card-title {
+        color: white;
+        text-shadow: 0 0 8px rgba(0, 0, 0, 0.7);
+    }
+    
+    .card-subtitle {
+        color: #CCC !important;
+    }
+    
+    .card-text {
+        color: #EEE;
+    }
+    
+    .text-muted {
+        color: #AAA !important;
+    }
+    
+    .btn-primary {
+        background: linear-gradient(135deg, rgba(106, 55, 181, 0.9), rgba(132, 81, 209, 0.9));
+        border: none;
+        box-shadow: 0 0 15px rgba(106, 55, 181, 0.5);
+    }
+    
+    .btn-primary:hover {
+        background: linear-gradient(135deg, rgba(132, 81, 209, 0.9), rgba(106, 55, 181, 0.9));
+        transform: translateY(-3px);
+    }
+    
+    .btn-outline-primary {
+        color: #FFF;
+        border-color: rgba(106, 55, 181, 0.5);
+    }
+    
+    .btn-outline-primary:hover {
+        background-color: rgba(106, 55, 181, 0.3);
+        color: #FFF;
+        border-color: rgba(106, 55, 181, 0.8);
+    }
+    
+    .btn-outline-success {
+        color: #FFF;
+        border-color: rgba(46, 205, 200, 0.5);
+    }
+    
+    .btn-outline-success:hover {
+        background-color: rgba(46, 205, 200, 0.3);
+        color: #FFF;
+        border-color: rgba(46, 205, 200, 0.8);
+    }
+    
+    .btn-outline-danger {
+        color: #FFF;
+        border-color: rgba(245, 111, 173, 0.5);
+    }
+    
+    .btn-outline-danger:hover {
+        background-color: rgba(245, 111, 173, 0.3);
+        color: #FFF;
+        border-color: rgba(245, 111, 173, 0.8);
+    }
+    
+    .btn-outline-light {
+        color: #FFF;
+        border-color: rgba(255, 255, 255, 0.5);
+    }
+    
+    .btn-outline-light:hover {
+        background-color: rgba(255, 255, 255, 0.2);
+        color: #FFF;
+    }
+    
+    .list-group-item {
+        background-color: rgba(26, 20, 64, 0.5);
+        border: 1px solid rgba(106, 55, 181, 0.2);
+        color: #EEE;
+    }
+    
+    .progress {
+        height: 10px;
+        background-color: rgba(255, 255, 255, 0.1);
+    }
+    
+    .progress-bar {
+        background: linear-gradient(135deg, rgba(46, 205, 200, 0.9), rgba(106, 55, 181, 0.9));
+    }
+    
+    .modal-dialog {
+        margin-top: 5vh !important;
+        margin-bottom: 5vh !important;
+        display: flex;
+        align-items: center;
+        min-height: 90vh;
+    }
+    .modal-content {
+        background: rgba(26, 20, 64, 0.97) !important;
+        color: #fff !important;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(46, 205, 200, 0.08);
+    }
+    .modal, .modal-backdrop {
+        z-index: 99999 !important;
+    }
+    body.modal-open {
+        pointer-events: auto !important;
+    }
+    
+    .form-control {
+        background-color: #fff !important;
+        color: #222 !important;
+        border: 1px solid #ccc !important;
+    }
+    
+    .form-control:focus {
+        background-color: #f5f5f5 !important;
+        color: #222 !important;
+        border-color: #30E8E8 !important;
+        box-shadow: 0 0 0 0.15rem rgba(46,205,200,0.15) !important;
+    }
+    
+    .form-label {
+        color: #333 !important;
+    }
+    
+    .modal-backdrop {
+        z-index: 1040 !important;
+         display: none !important; 
+    }
+    .modal {
+        z-index: 1050 !important;
+    }
+    .modal-content, .modal-dialog, .modal-body, .modal-header, .modal-footer, .form-control {
+        pointer-events: auto !important;
+    }
+    .table {
+        background: rgba(26, 20, 64, 0.85) !important;
+        color: #fff !important;
+        border-radius: 10px;
+        overflow: hidden;
+    }
+    .table th, .table td {
+        background: transparent !important;
+        color: #fff !important;
+        border-color: rgba(106, 55, 181, 0.2) !important;
+    }
+    .table thead th {
+        background: rgba(48, 232, 232, 0.08) !important;
+        color: #30E8E8 !important;
+        font-weight: 700;
+    }
+    .table-hover tbody tr:hover {
+        background: rgba(48, 232, 232, 0.08) !important;
+        color: #30E8E8 !important;
+    }
+    #editTaskModal label,
+    #addTaskModal label {
+        color: #fff !important;
+    }
+    .completed-card {
+        min-height: 120px !important;
+        max-width: 350px !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+        font-size: 0.95rem !important;
+        padding: 0.5rem 0.5rem 0.25rem 0.5rem !important;
+    }
+    /* Günlük Rapor Modalı için soft ve temaya uygun arka plan */
+    #reportModal .modal-content {
+        background: #f5f6fa !important; /* Soft açık lila-mavi */
+        color: #232323 !important;
+        border-radius: 18px;
+        box-shadow: 0 10px 30px rgba(46, 205, 200, 0.08);
+    }
+    #reportModal .modal-header, #reportModal .modal-body, #reportModal .modal-footer {
+        background: transparent !important;
+        color: #232323 !important;
+    }
+    #reportModal .modal-title {
+        color: #232323 !important;
+        font-weight: 700;
+        letter-spacing: 1px;
+    }
+    #reportModal .btn, #reportModal button, #reportModal .btn-close {
+        background: #fff !important;
+        color: #232323 !important;
+        border: 1px solid #e0c3fc !important;
+        box-shadow: none;
+        border-radius: 8px;
+        transition: background 0.2s, color 0.2s;
+    }
+    #reportModal .btn:hover, #reportModal button:hover {
+        background: #e0c3fc !important;
+        color: #232323 !important;
+    }
+    #reportModal .card, #reportModal .list-group-item, #reportModal .bg-success, #reportModal .bg-danger, #reportModal .bg-info, #reportModal .bg-primary, #reportModal .bg-secondary {
+        background: rgba(255,255,255,0.92) !important;
+        color: #232323 !important;
+        border: 1px solid #e0c3fc !important;
+    }
+    #reportModal .list-group-item.text-muted {
+        color: #888 !important;
+    }
+    #reportModal .badge {
+        background: #e0c3fc !important;
+        color: #232323 !important;
+    }
+    .gorevlerim-bg {
+        background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%);
+        position: fixed;
+        left: 0; top: 0; width: 100vw; height: 100vh;
+        z-index: -1;
+    }
+</style>
+{% endblock %}
+
+{% block hedefleyici_content %}
+<div class="gorevlerim-bg"></div>
+<div class="container-fluid p-0">
+    <div class="row">
+        <div class="col-12">
+            <h2 style="color:#232323; text-shadow:0 0 15px #fff, 0 0 20px #fff; font-size: 2.2rem; font-weight: 800; text-align: left; margin-bottom: 0.8rem; margin-top: 2.5rem; letter-spacing: 2px;"><i class="fas fa-clipboard-list" style="margin-right: 12px;"></i>Görevlerim</h2>
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addTaskModal">
+                            <i class="fas fa-plus-circle me-2"></i>Yeni Görev Ekle
+                        </button>
+                        <button type="button" class="btn btn-info" id="showReportBtn">
+                            <i class="fas fa-file-alt me-2"></i>Günlük Raporu Gör
+                        </button>
+                    </div>
+                    
+                    <!-- Görev Filtreleme -->
+                    <div class="mb-4">
+                        <div class="btn-group" role="group">
+                            <a href="{{ url_for('gorevlerim', filter='all') }}" class="btn btn-sm {% if filter == 'all' %}btn-primary{% else %}btn-outline-primary{% endif %}">Görevlerim</a>
+                            <a href="{{ url_for('gorevlerim', filter='completed') }}" class="btn btn-sm {% if filter == 'completed' %}btn-primary{% else %}btn-outline-primary{% endif %}">Son Tamamlananlar</a>
+                        </div>
+                    </div>
+                    
+                    <!-- Görev Kartları -->
+                    <div id="taskCards" class="row g-4">
+                        {% set now = now or datetime.utcnow() %}
+                        {% if filter == 'completed' %}
+                            {% set tasks = completed_tasks %}
+                        {% endif %}
+                        {% if tasks and tasks|length > 0 %}
+                            {% for task in tasks %}
+                            <div class="col-12 col-md-6 col-lg-4">
+                                <div class="card shadow-sm border-0 h-100 p-0 completed-card" style="background:rgba(26,20,64,0.92);border-radius:18px;overflow:hidden;position:relative;">
+                                    <div class="card-body d-flex flex-column justify-content-between h-100">
+                                        <div class="d-flex align-items-center mb-2 justify-content-between">
+                                            <div class="d-flex align-items-center">
+                                                <span class="fw-bold fs-6 me-2" style="color:#fff; text-shadow:{% if task.Priority == 'High' %}0 0 6px rgba(255,23,68,0.5),0 0 10px rgba(255,23,68,0.3);{% elif task.Priority == 'Medium' %}0 0 6px rgba(255,214,0,0.5),0 0 10px rgba(255,214,0,0.3);{% else %}0 0 6px rgba(48,232,232,0.5),0 0 10px rgba(48,232,232,0.3);{% endif %};font-size:1.08rem;">{{ task.Title }}</span>
+                                            </div>
+                                            {% if filter != 'completed' %}
+                                            <form class="d-flex align-items-center gap-1 add-subtask-form-frontend ms-3" data-task-id="{{ task.TaskId }}" style="min-width:140px;">
+                                                <input type="text" class="form-control form-control-sm py-1 px-2" name="content" placeholder="Alt görev ekle..." maxlength="255" required style="max-width:110px; font-size:0.92rem; height:28px; border-radius:7px;">
+                                                <button type="submit" class="btn btn-xs btn-outline-primary p-1 d-flex align-items-center justify-content-center" style="width:26px; height:26px; border-radius:7px;"><i class="fas fa-plus" style="font-size:0.95em;"></i></button>
+                                            </form>
+                                            {% endif %}
+                                        </div>
+                                        <div class="mb-2">
+                                            <ul class="list-unstyled mb-2 subtasks-list" data-task-id="{{ task.TaskId }}"></ul>
+                                        </div>
+                                        {% if task.Description %}
+                                        <div class="mb-2 px-3 py-2 rounded" style="background:rgba(255,255,255,0.08);color:#e0e0e0;max-width:100%;word-break:break-word;">
+                                            <i class="fas fa-align-left me-1"></i>{{ task.Description }}
+                                        </div>
+                                        {% endif %}
+                                        <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
+                                            <span class="badge bg-gradient" style="background:linear-gradient(90deg,#30E8E8,#536976);font-size:1rem;">
+                                                <i class="fas fa-calendar-alt me-1"></i>
+                                                {% if filter == 'completed' %}
+                                                    {{ task.CompletedAt.strftime('%d.%m.%Y %H:%M') if task.CompletedAt else '' }}
+                                                {% else %}
+                                                    {{ task.DueDate.strftime('%d.%m.%Y %H:%M') }}
+                                                {% endif %}
+                                            </span>
+                                            {% if task.Status == 'completed' %}
+                                            <span class="badge bg-success d-flex align-items-center gap-1" style="font-size:1rem;"><i class="fas fa-check-circle"></i> Tamamlandı</span>
+                                            {% elif task.DueDate < now and task.Status != 'completed' %}
+                                            <span class="badge bg-danger d-flex align-items-center gap-1" style="font-size:1rem;"><i class="fas fa-exclamation-triangle"></i> Gecikmiş</span>
+                                            {% else %}
+                                            <span class="badge bg-primary d-flex align-items-center gap-1" style="font-size:1rem;"><i class="fas fa-bolt"></i> Aktif</span>
+                                            {% endif %}
+                                        </div>
+                                        <div class="d-flex justify-content-end align-items-center gap-2 mt-auto">
+                                            {% if filter != 'completed' %}
+                                            <button type="button" class="btn btn-success btn-sm btn-complete-task d-flex align-items-center justify-content-center" data-task-id="{{ task.TaskId }}" title="Tamamla" style="border-radius:50%;width:36px;height:36px;transition:all .2s;"><i class="fas fa-check"></i></button>
+                                            <a href="#" class="btn btn-outline-info btn-sm btn-edit-task d-flex align-items-center justify-content-center" data-task-id="{{ task.TaskId }}" title="Düzenle" style="border-radius:50%;width:36px;height:36px;transition:all .2s;"><i class="fas fa-edit"></i></a>
+                                            {% endif %}
+                                            <button type="button" class="btn btn-outline-danger btn-sm delete-task d-flex align-items-center justify-content-center" data-task-id="{{ task.TaskId }}" title="Sil" style="border-radius:50%;width:36px;height:36px;transition:all .2s;"><i class="fas fa-trash"></i></button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Yeni Görev Ekleme Modal -->
+<div class="modal fade" id="addTaskModal" tabindex="-1" aria-labelledby="addTaskModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addTaskModalLabel">Yeni Görev Ekle</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Kapat"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addTaskForm" action="{{ url_for('add_task') }}" method="post">
+                    <div class="mb-3">
+                        <label for="title" class="form-label">Görev Başlığı</label>
+                        <input type="text" class="form-control" id="title" name="title" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Açıklama</label>
+                        <textarea class="form-control" id="description" name="description" rows="3"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="due_date" class="form-label">Son Tarih</label>
+                        <input type="datetime-local" class="form-control" id="due_date" name="due_date" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="priority" class="form-label">Öncelik</label>
+                        <select class="form-select" id="priority" name="priority">
+                            <option value="Low">Düşük</option>
+                            <option value="Medium" selected>Orta</option>
+                            <option value="High">Yüksek</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="category" class="form-label">Kategori</label>
+                        <select class="form-select" id="category" name="category">
+                            <option value="Work">İş</option>
+                            <option value="Personal">Kişisel</option>
+                            <option value="Study">Çalışma</option>
+                            <option value="Health">Sağlık</option>
+                            <option value="Other">Diğer</option>
+                        </select>
+                    </div>
+                    <div class="text-end">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                        <button type="submit" class="btn btn-primary">Görev Ekle</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Düzenleme Modalı -->
+<div class="modal fade" id="editTaskModal" tabindex="-1" aria-labelledby="editTaskModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editTaskModalLabel">Görev Düzenle</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Kapat"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editTaskForm">
+                    <input type="hidden" id="editTaskId" name="task_id">
+                    <div class="mb-3">
+                        <label for="editTitle" class="form-label">Başlık</label>
+                        <input type="text" class="form-control" id="editTitle" name="title" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editDescription" class="form-label">Açıklama</label>
+                        <textarea class="form-control" id="editDescription" name="description" rows="3"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editDueDate" class="form-label">Son Tarih</label>
+                        <input type="datetime-local" class="form-control" id="editDueDate" name="due_date" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editPriority" class="form-label">Öncelik</label>
+                        <select class="form-select" id="editPriority" name="priority">
+                            <option value="Low">Düşük</option>
+                            <option value="Medium">Orta</option>
+                            <option value="High">Yüksek</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editCategory" class="form-label">Kategori</label>
+                        <select class="form-select" id="editCategory" name="category">
+                            <option value="Work">İş</option>
+                            <option value="Personal">Kişisel</option>
+                            <option value="Study">Çalışma</option>
+                            <option value="Health">Sağlık</option>
+                            <option value="Other">Diğer</option>
+                        </select>
+                    </div>
+                    <div class="text-end">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                        <button type="submit" class="btn btn-primary">Değişiklikleri Kaydet</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Günlük Rapor Modalı -->
+<div class="modal fade" id="reportModal" tabindex="-1" aria-labelledby="reportModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="reportModalLabel">Günlük Görev Raporu</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Kapat"></button>
+      </div>
+      <div class="modal-body" id="reportModalBody">
+        <div class="text-center text-muted py-5">Yükleniyor...</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // CSRF token'ı meta tag'dan al
+        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+        // Görev tamamlanma durumunu güncelleme
+        const taskCheckboxes = document.querySelectorAll('.task-checkbox');
+        taskCheckboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                const taskId = this.getAttribute('data-task-id');
+                const isCompleted = this.checked;
+                if (isCompleted) {
+                    fetch(`/complete-task/${taskId}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': csrfToken
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            window.location.reload();
+                        } else {
+                            alert('Görev tamamlanırken bir hata oluştu.');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('Görev tamamlanırken bir hata oluştu.');
+                    });
+                } else {
+                    // İleriye dönük: tamamlanmış görevi tekrar aktif yapmak istenirse buraya eklenebilir
+                    alert('Bir görevi tekrar aktife almak için lütfen düzenle bölümünü kullanın.');
+                    this.checked = true;
+                }
+            });
+        });
+        
+        // Görev silme
+        const deleteButtons = document.querySelectorAll('.delete-task');
+        deleteButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const taskId = this.getAttribute('data-task-id');
+                
+                if (confirm('Bu görevi silmek istediğinizden emin misiniz?')) {
+                    fetch('/delete_task', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrfToken
+                        },
+                        body: JSON.stringify({
+                            task_id: taskId
+                        }),
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                            window.location.reload();
+            } else {
+                alert('Görev silinirken bir hata oluştu.');
+            }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('Görev silinirken bir hata oluştu.');
+        });
+    }
+            });
+        });
+        
+        // Son tarih olarak varsayılan bir saat sonrasını ayarlama
+        const dueDate = document.getElementById('due_date');
+        if (dueDate) {
+            const now = new Date();
+            now.setHours(now.getHours() + 1);
+            const dateString = now.toISOString().slice(0, 16);
+            dueDate.value = dateString;
+        }
+
+        const showReportBtn = document.getElementById('showReportBtn');
+        const reportModal = new bootstrap.Modal(document.getElementById('reportModal'));
+        const reportModalBody = document.getElementById('reportModalBody');
+        if (showReportBtn) {
+            showReportBtn.addEventListener('click', function() {
+                reportModalBody.innerHTML = '<div class="text-center text-muted py-5">Yükleniyor...</div>';
+                fetch('/report')
+                    .then(response => response.text())
+                    .then(html => {
+                        // Sadece report.html içeriğinin ana kısmını al
+                        const parser = new DOMParser();
+                        const doc = parser.parseFromString(html, 'text/html');
+                        const reportContent = doc.querySelector('.container');
+                        if (reportContent) {
+                            reportModalBody.innerHTML = reportContent.outerHTML;
+                        } else {
+                            reportModalBody.innerHTML = '<div class="text-danger">Rapor yüklenemedi.</div>';
+                        }
+                    })
+                    .catch(() => {
+                        reportModalBody.innerHTML = '<div class="text-danger">Rapor yüklenemedi.</div>';
+                    });
+                reportModal.show();
+            });
+        }
+    });
+
+// Düzenle butonuna tıklanınca modalı aç ve verileri doldur
+$(document).on('click', '.btn-edit-task', function() {
+    var taskId = $(this).data('task-id');
+    // AJAX ile görev detaylarını al
+    $.get('/get_task/' + taskId, function(data) {
+        $('#editTaskId').val(data.TaskId);
+        $('#editTitle').val(data.Title);
+        $('#editDescription').val(data.Description);
+        $('#editDueDate').val(data.DueDate);
+        $('#editPriority').val(data.Priority);
+        $('#editCategory').val(data.Category);
+        $('#editTaskModal').modal('show');
+    });
+});
+// Form submit
+$('#editTaskForm').submit(function(e) {
+    e.preventDefault();
+    var formData = $(this).serialize();
+    $.post('/edit_task_modal', formData, function(response) {
+        if(response.success){
+            location.reload();
+        } else {
+            alert('Güncelleme sırasında hata oluştu!');
+        }
+    });
+});
+
+// Görev tamamla butonu
+$(document).on('click', '.btn-complete-task', function() {
+    var taskId = $(this).data('task-id');
+    if(confirm('Bu görevi tamamlandı olarak işaretlemek istiyor musunuz?')) {
+        $.post('/complete_task/' + taskId, function(response) {
+            if(response.success){
+                location.reload();
+            } else {
+                alert('Görev tamamlanırken bir hata oluştu!');
+            }
+        });
+    }
+});
+
+// Frontend-only alt görevler (subtasks) için localStorage kullan
+function getSubtasks(taskId) {
+    let all = JSON.parse(localStorage.getItem('subtasks') || '{}');
+    return all[taskId] || [];
+}
+function setSubtasks(taskId, subtasks) {
+    let all = JSON.parse(localStorage.getItem('subtasks') || '{}');
+    all[taskId] = subtasks;
+    localStorage.setItem('subtasks', JSON.stringify(all));
+}
+function renderSubtasks(taskId) {
+    var $list = $('.subtasks-list[data-task-id="'+taskId+'"]');
+    $list.empty();
+    let subtasks = getSubtasks(taskId);
+    subtasks.forEach(function(sub, idx) {
+        $list.append('<li class="d-flex align-items-center mb-1">'+
+            '<input type="checkbox" class="form-check-input me-2 subtask-checkbox-frontend" data-task-id="'+taskId+'" data-idx="'+idx+'" '+(sub.done?'checked':'')+'>\n'+
+            '<span class="subtask-content '+(sub.done?'text-decoration-line-through text-muted':'')+'" style="transition:color .2s;">'+sub.text+'</span>'+
+        '</li>');
+    });
+}
+// Sayfa yüklenince tüm görevler için alt görevleri render et
+$(function(){
+    $('[data-task-id]').each(function(){
+        var taskId = $(this).data('task-id');
+        renderSubtasks(taskId);
+    });
+});
+// Alt görev ekleme (frontend)
+$(document).on('submit', '.add-subtask-form-frontend', function(e) {
+    e.preventDefault();
+    var $form = $(this);
+    var taskId = $form.data('task-id');
+    var content = $form.find('input[name="content"]').val();
+    let subtasks = getSubtasks(taskId);
+    subtasks.push({text: content, done: false});
+    setSubtasks(taskId, subtasks);
+    renderSubtasks(taskId);
+    $form[0].reset();
+});
+// Alt görev tamamla (frontend)
+$(document).on('change', '.subtask-checkbox-frontend', function() {
+    var taskId = $(this).data('task-id');
+    var idx = $(this).data('idx');
+    let subtasks = getSubtasks(taskId);
+    subtasks[idx].done = $(this).is(':checked');
+    setSubtasks(taskId, subtasks);
+    renderSubtasks(taskId);
+});
+</script>
+{% endblock %} 

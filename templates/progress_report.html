@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+{% block title %}Gelişim Raporu - ReviseMe{% endblock %}
+
+{% block styles %}
+<style>
+    .progress-report-bg {
+        background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%);
+        position: fixed;
+        left: 0; top: 0; width: 100vw; height: 100vh;
+        z-index: -1;
+    }
+    .card {
+        background: rgba(255, 255, 255, 0.9);
+        backdrop-filter: blur(5px);
+    }
+</style>
+{% endblock %}
+
+{% block page_content %}
+<div class="progress-report-bg"></div>
+<div class="container mt-4">
+    <h2 style="color: #232323; font-size: 2.2rem; font-weight: 800; text-align: left; margin-bottom: 0.8rem; margin-top: 2.5rem; letter-spacing: 2px; font-family: 'Nunito', sans-serif; text-shadow: 0 0 15px #fff, 0 0 20px #fff;"><i class="fas fa-chart-line"></i> Gelişim Raporu</h2>
+    
+    {# İstatistik Kartları #}
+    <div class="row mb-4">
+        <div class="col-md-3 mb-3">
+            <div class="card shadow text-center border-primary">
+                <div class="card-body">
+                    <h5 class="card-title">Bu Hafta Tamamlanan Soru</h5>
+                    <p class="display-6 text-primary">{{ current_weekly_questions }}</p>
+                    {% if last_week_completed_questions is not none %}
+                        <small class="text-muted">Geçen hafta: {{ last_week_completed_questions }}</small>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card shadow text-center border-success">
+                <div class="card-body">
+                    <h5 class="card-title">Bu Ay Tamamlanan Soru</h5>
+                    <p class="display-6 text-success">{{ current_monthly_questions }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card shadow text-center border-warning">
+                <div class="card-body">
+                    <h5 class="card-title">Bu Hafta Tamamlanan Görev</h5>
+                    <p class="display-6 text-warning">{{ current_weekly_tasks }}</p>
+                    {% if last_week_completed_tasks is not none %}
+                        <small class="text-muted">Geçen hafta: {{ last_week_completed_tasks }}</small>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card shadow text-center border-info">
+                <div class="card-body">
+                    <h5 class="card-title">Haftalık Başarı Oranı</h5>
+                    <p class="display-6 text-info">{{ weekly_success_rate }}%</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {# Öneri ve Hedef Bölümü #}
+    <div class="row mb-4">
+        <div class="col-md-6 mb-3">
+            <div class="card shadow border-success">
+                <div class="card-body">
+                    <h5 class="card-title text-success"><i class="fas fa-bullseye"></i> Haftalık Hedef</h5>
+                    <p class="lead">{{ goal_message }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 mb-3">
+            <div class="card shadow border-primary">
+                <div class="card-body">
+                    <h5 class="card-title text-primary"><i class="fas fa-lightbulb"></i> Öneri</h5>
+                    <p class="lead">{{ suggestion }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {# Grafik Bölümü #}
+    {% if graph_url %}
+    <div class="card shadow mb-4">
+        <div class="card-body">
+            <h5 class="card-title">Derslere Göre Tekrar Performansı (Daire Grafiği)</h5>
+            <img src="data:image/png;base64,{{ graph_url }}" alt="Gelişim Grafiği" class="img-fluid">
+        </div>
+    </div>
+    {% else %}
+    <div class="alert alert-info" role="alert">
+        Görüntülenecek tekrar performans verisi bulunmuyor. Lütfen birkaç soru ekleyip tekrarlarınızı tamamlayın.
+    </div>
+    {% endif %}
+    
+</div>
+{% endblock page_content %}
+{% block scripts %}
+{{ super() }}
+<!-- Bu sayfada Chart.js kullanılmıyor, scriptler kaldırıldı -->
+{% endblock scripts %}

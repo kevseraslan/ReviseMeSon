@@ -1,0 +1,148 @@
+{% extends "hedefleyici.html" %}
+
+{% block title %}Günlük Rapor{% endblock %}
+
+{% block styles %}
+{{ super() }}
+<style>
+    /* Add the new background style here */
+    .report-bg {
+        background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%);
+        position: fixed;
+        left: 0; top: 0; width: 100vw; height: 100vh;
+        z-index: -1;
+    }
+    /* Rapor sayfasına özel stiller */
+    h2 {
+        color: #30E8E8;
+        font-size: 2.5rem;
+        font-weight: 800;
+        margin-bottom: 1.5rem;
+        text-shadow: 0 0 15px rgba(48, 6, 75, 0.8), 0 0 20px rgba(48, 6, 75, 0.4);
+    }
+    
+    .card {
+        background-color: rgba(26, 20, 64, 0.8);
+        border: 1px solid rgba(106, 55, 181, 0.3);
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        transition: all 0.3s ease;
+        color: #FFF;
+        backdrop-filter: blur(5px);
+    }
+    
+    .card-header {
+        border-bottom: 1px solid rgba(106, 55, 181, 0.3);
+        padding: 1rem 1.5rem;
+    }
+    
+    .bg-success {
+        background-color: rgba(40, 167, 69, 0.8) !important;
+    }
+    
+    .bg-danger {
+        background-color: rgba(220, 53, 69, 0.8) !important;
+    }
+    
+    .bg-info {
+        background-color: rgba(23, 162, 184, 0.8) !important;
+    }
+    
+    .bg-primary {
+        background-color: rgba(0, 123, 255, 0.8) !important;
+    }
+    
+    .bg-secondary {
+        background-color: rgba(108, 117, 125, 0.8) !important;
+    }
+    
+    .list-group-item {
+        background-color: rgba(26, 20, 64, 0.5);
+        border: 1px solid rgba(106, 55, 181, 0.2);
+        color: #EEE;
+    }
+</style>
+{% endblock %}
+
+{% block hedefleyici_content %}
+{# <div class="report-bg"></div> #}
+<div class="container mt-4">
+    <!-- Özet Kutucuklar -->
+    <div class="row mb-4">
+        <div class="col-md-3 mb-2">
+            <div class="card text-white bg-success text-center">
+                <div class="card-body">
+                    <div class="fw-bold">Tamamlanan Görevler</div>
+                    <div style="font-size:2rem;">{{ completed_count }}</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-2">
+            <div class="card text-white bg-danger text-center">
+                <div class="card-body">
+                    <div class="fw-bold">Geciken Görevler</div>
+                    <div style="font-size:2rem;">{{ overdue_count }}</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-2">
+            <div class="card text-white bg-info text-center">
+                <div class="card-body">
+                    <div class="fw-bold">Tamamlanma Oranı</div>
+                    <div style="font-size:2rem;">%{{ completion_rate }}</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-2">
+            <div class="card text-white bg-primary text-center">
+                <div class="card-body">
+                    <div class="fw-bold">Pomodoro Süresi</div>
+                    <div style="font-size:2rem;">{{ total_time }} dk</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Detaylı Listeler -->
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header bg-success text-white">Tamamlanan Görevler</div>
+                <ul class="list-group list-group-flush">
+                    {% for task in completed_tasks %}
+                    <li class="list-group-item">{{ task.Title }}</li>
+                    {% else %}
+                    <li class="list-group-item text-muted">Bugün tamamlanan görev yok.</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header bg-danger text-white">Geciken Görevler</div>
+                <ul class="list-group list-group-flush">
+                    {% for task in overdue_tasks %}
+                    <li class="list-group-item">{{ task.Title }} <span class="badge bg-danger ms-2">{{ task.DueDate.strftime('%d.%m.%Y %H:%M') }}</span></li>
+                    {% else %}
+                    <li class="list-group-item text-muted">Geciken görev yok.</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Toplam Çalışma Süresi ve Özet -->
+    <div class="card mt-4">
+        <div class="card-header bg-secondary text-white">Pomodoro Özeti</div>
+        <div class="card-body">
+            <ul>
+                <li>Bugün toplam <b>{{ total_time }}</b> dakika Pomodoro yaptın!</li>
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+{% endblock %} 

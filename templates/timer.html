@@ -1,0 +1,233 @@
+{% extends "base.html" %}
+
+{% block title %}Sayaç - ReviseMe{% endblock %}
+
+{% block page_content %}
+<div class="timer-bg"></div>
+<div class="inner-content-wrapper">
+    <h2 class="pomodoro-header mb-4"><i class="fas fa-stopwatch" style="margin-right: 12px;"></i>Pomodoro Sayaç</h2>
+    <div class="card mb-4">
+        <div class="card-body text-center">
+            <div id="timerModeTitle" style="font-size:1.2rem; font-weight:600; margin-bottom:10px;">Odaklanma Zamanı</div>
+            <div id="timerDisplay" style="font-size:3rem; font-weight:bold;">25:00</div>
+            <div class="mt-3 d-flex justify-content-center gap-2">
+                <button class="btn btn-success" id="startBtn"><i class="fas fa-play"></i> Başlat</button>
+                <button class="btn btn-danger" id="stopBtn" style="display: none;"><i class="fas fa-stop"></i> Durdur</button>
+                <button class="btn btn-secondary" id="resetBtn"><i class="fas fa-undo"></i> Sıfırla</button>
+                <button class="btn btn-primary" id="saveBtn"><i class="fas fa-save"></i> Kaydet</button>
+                <button class="btn btn-warning" id="skipBtn" style="display: none;"><i class="fas fa-forward"></i> Mola Geç</button>
+            </div>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-header bg-light fw-bold"><i class="fas fa-cog"></i> Ayarlar</div>
+        <div class="card-body">
+            <form id="pomodoroSettingsForm">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Çalışma Süresi (dk)</label>
+                        <input type="number" class="form-control" id="workDuration" min="1" max="60" value="25">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Kısa Mola (dk)</label>
+                        <input type="number" class="form-control" id="shortBreakDuration" min="1" max="30" value="5">
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Uzun Mola (dk)</label>
+                        <input type="number" class="form-control" id="longBreakDuration" min="1" max="60" value="15">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Uzun Mola Öncesi Pomodoro</label>
+                        <input type="number" class="form-control" id="pomodorosUntilLongBreak" min="1" max="10" value="4">
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="autoStartBreaks" checked>
+                            <label class="form-check-label">Molaları otomatik başlat</label>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="autoStartPomodoros" checked>
+                            <label class="form-check-label">Pomodoro'ları otomatik başlat</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="playSound" checked>
+                            <label class="form-check-label">Bildirim sesi çal</label>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="showNotifications" checked>
+                            <label class="form-check-label">Bildirimleri göster</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="text-end">
+                    <button type="button" class="btn btn-primary" id="saveSettingsBtnMain">
+                        <i class="fas fa-save"></i> Ayarları Kaydet
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block styles %}
+<style>
+    body {
+        background-color: transparent !important;
+        position: relative;
+    }
+    .timer-bg {
+        background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%);
+        position: fixed;
+        left: 0; top: 0; width: 100vw; height: 100vh;
+        z-index: -1;
+    }
+    .card {
+        background: rgba(35, 41, 70, 0.85);
+        color: #fff;
+        border: none;
+        box-shadow: 0 2px 16px rgba(48, 6, 75, 0.08);
+        backdrop-filter: blur(5px);
+    }
+    .card-header.bg-light {
+        background: rgba(35, 41, 70, 0.95) !important;
+        color: #30E8E8 !important;
+        border-bottom: 1px solid #2d3250;
+    }
+    .form-label, .form-check-label {
+        color: #b8c1ec;
+    }
+    .form-control {
+        background: rgba(22, 22, 26, 0.8);
+        color: #fff;
+        border: 1px solid #2d3250;
+    }
+    .form-control:focus {
+        background: rgba(35, 41, 70, 0.9);
+        color: #fff;
+        border-color: #30E8E8;
+        box-shadow: 0 0 0 0.2rem rgba(48, 232, 232, 0.15);
+    }
+    .btn-primary, .btn-success, .btn-danger, .btn-secondary, .btn-warning {
+        border: none;
+        font-weight: 600;
+    }
+    .btn-primary {
+        background: linear-gradient(90deg, #30E8E8 0%, #536976 100%);
+        color: #fff;
+    }
+    .btn-success {
+        background: linear-gradient(90deg, #43e97b 0%, #38f9d7 100%);
+        color: #232946;
+    }
+    .btn-danger {
+        background: linear-gradient(90deg, #ff5858 0%, #f09819 100%);
+        color: #fff;
+    }
+    .btn-secondary {
+        background: #b8c1ec;
+        color: #232946;
+    }
+    .btn-warning {
+        background: linear-gradient(90deg, #f7971e 0%, #ffd200 100%);
+        color: #232946;
+    }
+    .inner-content-wrapper {
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 32px 0;
+    }
+    .pomodoro-header {
+        color: #232323;
+        font-size: 2.2rem;
+        font-weight: 800;
+        text-align: left;
+        margin-bottom: 0.8rem;
+        margin-top: 2.5rem;
+        letter-spacing: 2px;
+        font-family: 'Nunito', sans-serif;
+        text-shadow: 0 0 15px #fff, 0 0 20px #fff;
+    }
+</style>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Event listeners for Main Timer Controls on the timer page
+        const startBtn = document.getElementById('startBtn');
+        const stopBtn = document.getElementById('stopBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const saveBtn = document.getElementById('saveBtn');
+        const skipBtn = document.getElementById('skipBtn');
+        const saveSettingsBtn = document.getElementById('saveSettingsBtnMain'); // Use the new ID
+
+        if (startBtn) startBtn.addEventListener('click', function() { 
+            if (typeof window.startTimer === 'function') { 
+                window.startTimer(); 
+                if (typeof window.showMiniPomodoro === 'function') { 
+                    window.showMiniPomodoro(); // Show mini timer when main timer starts
+                }
+            }
+        });
+
+        if (stopBtn) stopBtn.addEventListener('click', function() { 
+            if (typeof window.stopTimer === 'function') { 
+                window.stopTimer(); 
+            }
+        });
+
+        if (resetBtn) resetBtn.addEventListener('click', function() { 
+            if (typeof window.resetTimer === 'function') { 
+                window.resetTimer(); 
+            }
+        });
+
+        if (saveBtn) saveBtn.addEventListener('click', function() { 
+            if (typeof window.saveTimer === 'function') { 
+                window.saveTimer(); 
+            }
+        });
+
+        if (skipBtn) skipBtn.addEventListener('click', function() { 
+            if (typeof window.skipTimer === 'function') { 
+                window.skipTimer(); 
+            }
+        });
+
+        if (saveSettingsBtn) saveSettingsBtn.addEventListener('click', function() {
+             if (typeof window.saveSettings === 'function') {
+                 window.saveSettings();
+             }
+        });
+
+        // Initial button states based on loaded state from base.html
+        // Assuming timerRunning is managed in base.html and accessible
+        // This part might need refinement based on how loadPomodoroState in base.html sets the running state
+        // A simple check based on localStorage might be sufficient if loadPomodoroState sets it correctly.
+        const savedState = JSON.parse(localStorage.getItem('pomodoroTimer'));
+        if (savedState && savedState.running) {
+             if(startBtn) startBtn.style.display = 'none';
+             if(stopBtn) stopBtn.style.display = 'inline-block';
+             if(skipBtn) skipBtn.style.display = 'inline-block';
+        } else {
+             if(startBtn) startBtn.style.display = 'inline-block';
+             if(stopBtn) stopBtn.style.display = 'none';
+             if(skipBtn) skipBtn.style.display = 'none';
+        }
+
+    });
+</script>
+{% endblock %} 

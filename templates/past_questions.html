@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+
+{% block title %}Geçmiş Sorular - ReviseMe{% endblock %}
+
+{% block styles %}
+<style>
+    body {
+        background-color: transparent !important;
+        position: relative;
+    }
+    .past-questions-bg {
+        background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%);
+        position: fixed;
+        left: 0; top: 0; width: 100vw; height: 100vh;
+        z-index: -1;
+    }
+    .page-header {
+        color: #232323;
+        font-size: 2.2rem;
+        font-weight: 800;
+        text-align: left;
+        margin-bottom: 0.8rem;
+        margin-top: 2.5rem;
+        letter-spacing: 2px;
+        font-family: 'Nunito', sans-serif;
+        text-shadow: 0 0 15px #fff, 0 0 20px #fff;
+    }
+    .past-question-card {
+        background-color: rgba(26, 20, 64, 0.85);
+        border: 1px solid rgba(106, 55, 181, 0.3);
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        color: #FFF;
+        backdrop-filter: blur(5px);
+        transition: all 0.3s;
+        display: flex;
+        align-items: center;
+        padding: 1.2rem 1.5rem;
+        margin-bottom: 1.2rem;
+    }
+    .past-question-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 35px rgba(46, 205, 200, 0.3);
+        border-color: #2ECDC8;
+    }
+    .past-question-img {
+        height: 80px;
+        width: 80px;
+        object-fit: cover;
+        border-radius: 10px;
+        margin-right: 20px;
+        border: 2px solid #8451D1;
+        background: #fff;
+    }
+    .past-question-content {
+        flex-grow: 1;
+        font-size: 1.1rem;
+        font-weight: 500;
+        color: #FFF;
+        text-shadow: 0 0 8px rgba(0,0,0,0.4);
+    }
+    .past-question-date {
+        background: #2ECDC8;
+        color: #222;
+        font-weight: bold;
+        border-radius: 1rem;
+        padding: 0.3rem 1rem;
+        margin-left: 1rem;
+        font-size: 1rem;
+        box-shadow: 0 0 8px rgba(46,205,200,0.2);
+    }
+    .past-question-btn {
+        font-weight: bold;
+        font-size: 1rem;
+        border-radius: 1.5rem;
+        padding: 0.5rem 1.2rem;
+        background: linear-gradient(135deg, #6A37B5, #8451D1);
+        color: #fff;
+        border: none;
+        box-shadow: 0 0 10px rgba(106, 55, 181, 0.3);
+        transition: all 0.2s;
+        margin-left: 1rem;
+    }
+    .past-question-btn:hover {
+        background: linear-gradient(135deg, #2ECDC8, #8451D1);
+        color: #fff;
+        transform: translateY(-2px);
+    }
+</style>
+{% endblock %}
+
+{% block page_content %}
+<div class="past-questions-bg"></div>
+<div class="container mt-4">
+    <h2 class="page-header"><i class="fas fa-history" style="margin-right: 12px;"></i>Geçmiş Sorular</h2>
+    <div class="row">
+        {% for question in questions %}
+        <div class="col-12 past-question-card">
+            {% if question.ImagePath or question.PhotoPath %}
+                <img src="{{ url_for('static', filename=question.ImagePath or question.PhotoPath) }}" alt="Soru Görseli" class="past-question-img">
+            {% endif %}
+            <div class="past-question-content">
+                {{ question.Content[:100] }}{% if question.Content|length > 100 %}...{% endif %}
+            </div>
+            {# Çözülmesi gereken tarihi göster #}
+            <span class="past-question-date">
+                Çözülmesi gereken tarih:
+                {% if question.RepeatCount == 0 %}
+                    {{ question.Repeat1Date.strftime('%d.%m.%Y') if question.Repeat1Date else '' }}
+                {% elif question.RepeatCount == 1 %}
+                    {{ question.Repeat2Date.strftime('%d.%m.%Y') if question.Repeat2Date else '' }}
+                {% elif question.RepeatCount == 2 %}
+                    {{ question.Repeat3Date.strftime('%d.%m.%Y') if question.Repeat3Date else '' }}
+                {% endif %}
+            </span>
+            <a href="{{ url_for('view_question', question_id=question.QuestionId) }}" class="past-question-btn ms-3"><i class="fas fa-eye"></i> Görüntüle</a>
+        </div>
+        {% endfor %}
+        {% if questions|length == 0 %}
+        <div class="alert alert-info mt-3">Geçmiş soru bulunmuyor.</div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %} 

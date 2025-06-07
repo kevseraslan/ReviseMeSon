@@ -1,0 +1,149 @@
+{% extends "base.html" %}
+
+{% block title %}{{ category.Name }} Soruları - ReviseMe{% endblock %}
+
+{% block page_content %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Ana İçerik -->
+        <main class="col-12 px-md-4">
+            <!-- Üst Menü -->
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2" style="color:#232323; text-shadow:0 0 15px #fff, 0 0 20px #fff; font-size: 2.2rem; font-weight: 800; text-align: left; margin-bottom: 0.8rem; margin-top: 2.5rem; letter-spacing: 2px;">{{ category.Name }} Soruları</h1>
+                <a href="{{ url_for('index') }}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left"></i> Geri
+                </a>
+            </div>
+
+            <!-- Topic Filter Dropdown -->
+            <div class="mb-3">
+                <label for="topicFilter" class="form-label">Konuya Göre Filtrele:</label>
+                <select class="form-select" id="topicFilter" onchange="filterQuestions(this.value)">
+                    <option value="">Tüm Konular</option>
+                    {% for topic in all_topics %}
+                        <option value="{{ topic }}" {% if selected_topic == topic %}selected{% endif %}>{{ topic }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- JavaScript for filtering -->
+            <script>
+                function filterQuestions(topic) {
+                    let url = new URL(window.location.href);
+                    if (topic) {
+                        url.searchParams.set('topic', topic);
+                    } else {
+                        url.searchParams.delete('topic');
+                    }
+                    window.location.href = url.toString();
+                }
+            </script>
+
+            <!-- Display questions in cards -->
+            {% if questions %}
+                <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+                    {% for question in questions %}
+                        <div class="col">
+                            <div class="card h-100">
+                                {% if question.ImagePath %}
+                                <img src="{{ url_for('static', filename=question.ImagePath) }}" class="card-img-top" alt="Soru Görseli" style="height: 200px; object-fit: cover;">
+                                {% else %}
+                                <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                                    <i class="fas fa-image fa-3x text-muted"></i>
+                                </div>
+                                {% endif %}
+                                <div class="card-body">
+                                    <h5 class="card-title">{{ question.Content[:100] }}{% if question.Content|length > 100 %}...{% endif %}</h5>
+                                    <p class="card-text text-muted"><small>Konu: {{ question.Topic or "Diğer" }}</small></p>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div class="btn-group">
+                                            <a href="{{ url_for('view_question', question_id=question.QuestionId, section='kategori') }}" class="btn btn-sm btn-outline-primary">
+                                                <i class="fas fa-eye"></i> Görüntüle
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-footer">
+                                    {% if question.DifficultyLevel == 'Kolay' %}
+                                        <span class="text-warning"><i class="fas fa-star"></i> Kolay</span>
+                                    {% elif question.DifficultyLevel == 'Orta' %}
+                                        <span class="text-success"><i class="fas fa-star"></i><i class="fas fa-star"></i> Orta</span>
+                                    {% elif question.DifficultyLevel == 'Zor' %}
+                                        <span class="text-danger"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i> Zor</span>
+                                    {% else %}
+                                        <small class="text-muted">Zorluk Belirtilmemiş</small>
+                                    {% endif %}
+                                </div>
+                                <div class="card-footer text-muted">
+                                    {% set current_repeat_date = None %}
+                                    {% if question.RepeatCount == 0 %}
+                                        {% set current_repeat_date = question.Repeat1Date %}
+                                    {% elif question.RepeatCount == 1 %}
+                                        {% set current_repeat_date = question.Repeat2Date %}
+                                    {% elif question.RepeatCount == 2 %}
+                                        {% set current_repeat_date = question.Repeat3Date %}
+                                    {% endif %}
+
+                                    <small>
+                                        Tekrar Bilgisi:
+                                        {% set current_repeat_number = question.RepeatCount + 1 %}
+                                        {% if current_repeat_number <= 3 %}
+                                            <span class="fw-bold text-primary">Tekrar {{ current_repeat_number }}</span>
+                                        {% else %}
+                                            Tamamlandı
+                                        {% endif %}
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p>Bu kategoride veya seçili konuda soru bulunmamaktadır.</p>
+            {% endif %}
+        </main>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function deleteQuestion(questionId) {
+    if (confirm('Bu soruyu silmek istediğinizden emin misiniz?')) {
+        fetch(`/delete_question/${questionId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('Soru silinirken bir hata oluştu.');
+            }
+        });
+    }
+}
+
+function completeQuestion(questionId) {
+    fetch(`/complete_question/${questionId}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        } else {
+            alert('Soru tamamlanırken bir hata oluştu.');
+        }
+    });
+}
+</script>
+{% endblock %} 

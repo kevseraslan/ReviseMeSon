@@ -1,0 +1,101 @@
+<nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+    <div class="container-fluid d-flex align-items-center">
+        <!-- Hamburger Menü Butonu (ReviseMe'nin hemen yanında) -->
+        <button id="sidebarToggle" class="btn btn-link ms-2 p-0" type="button" style="font-size: 1.7rem;">
+            <i class="fas fa-bars"></i>
+        </button>
+        <a class="navbar-brand d-flex align-items-center" href="{{ url_for('index') }}">
+            <i class="fas fa-book-reader me-2"></i>ReviseMe
+        </a>
+        <div class="ms-auto d-flex align-items-center">
+            <div id="today-card-navbar" class="d-flex align-items-center me-3">
+                <div class="text-right">
+                    <div id="current-time" style="font-size: 1.2rem; font-weight: 700; color: #fff;"></div>
+                    <div id="current-date" style="font-size: 0.8rem; color: #ccc;"></div>
+                </div>
+            </div>
+            <div class="dropdown me-2">
+                <a class="nav-link dropdown-toggle position-relative" href="#" id="notificationsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="fas fa-bell"></i>
+                    {% if notification_count is defined and notification_count > 0 %}
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                        {{ notification_count }}
+                    </span>
+                    {% endif %}
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="notificationsDropdown" style="min-width: 320px;">
+                    {# daily_summary içeriğini başlık kısmında göster #}
+                    {% if daily_summary is defined and daily_summary %}
+                        <li class="dropdown-header text-center fw-bold" style="white-space: normal;">
+                            {% set daily_summary_items = daily_summary.split('<br>') %}
+                            {% for item in daily_summary_items %}
+                                <div>{{ item | safe }}</div>
+                            {% endfor %}
+                        </li>
+                        {# Eski daily_summary gösterilen li elementini kaldırıyoruz #}
+                        {# <li><hr class="dropdown-divider"></li> #}
+                    {% else %}
+                         <li class="dropdown-header text-center fw-bold">Bildirimler</li>
+                    {% endif %}
+                    {% if notifications and notifications|length > 0 %}
+                        {% for n in notifications %}
+                            {% if n.type != 'Motivasyon' %}
+                            <li class="px-3 py-2">
+                                <div class="fw-semibold">
+                                    {{ n.msg }}
+                                </div>
+                            </li>
+                            {% endif %}
+                        {% endfor %}
+                        {# Motivasyon bildirimi en altta gösterilsin #}
+                        {% for n in notifications %}
+                            {% if n.type == 'Motivasyon' %}
+                            <li class="px-3 py-2 text-info">
+                                <div class="fw-semibold">{{ n.msg }}</div>
+                            </li>
+                            {% endif %}
+                        {% endfor %}
+                    {% endif %}
+                    <li><hr class="dropdown-divider"></li>
+                    <li class="text-center mb-1">
+                        <a href="{{ url_for('notifications') }}" class="btn btn-sm btn-outline-primary">Tüm Bildirimler</a>
+                    </li>
+                </ul>
+            </div>
+            <div class="dropdown">
+                <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="fas fa-user-circle me-1"></i> {{ current_user.UserName }}
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end animated--fade-in" aria-labelledby="userDropdown">
+                    <li><a class="dropdown-item" href="{{ url_for('profile') }}"><i class="fas fa-user"></i> Profilim</a></li>
+                    <li><a class="dropdown-item" href="{{ url_for('settings') }}"><i class="fas fa-cog"></i> Ayarlar</a></li>
+                    <li><a class="dropdown-item" href="{{ url_for('logout') }}"><i class="fas fa-sign-out-alt"></i> Çıkış Yap</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</nav>
+<style>
+    #sidebarToggle {
+        display: inline-flex !important;
+        align-items: center;
+        justify-content: center;
+        height: 40px;
+        width: 40px;
+        margin-left: 0.5rem;
+        color: #fff;
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    
+    #sidebarToggle:hover {
+        color: #30E8E8;
+        transform: scale(1.1);
+    }
+    
+    #sidebarToggle:active {
+        transform: scale(0.95);
+    }
+</style> 

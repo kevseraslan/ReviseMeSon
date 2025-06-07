@@ -1,0 +1,43 @@
+<div class="side-menu">
+    <ul class="nav flex-column">
+        <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('add_question') }}">
+                <i class="fas fa-plus-circle"></i> Yeni Soru Ekle
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('favorites') }}">
+                <i class="fas fa-star"></i> Favorilerim
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('today_questions') }}">
+                <i class="fas fa-calendar-day"></i> Bugünün Soruları
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('past_questions') }}">
+                <i class="fas fa-history"></i> Geçmiş Sorular
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('timer') }}">
+                <i class="fas fa-clock"></i> Sayaç
+            </a>
+        </li>
+    </ul>
+</div>
+
+<script>
+    // Aktif sayfa için class ekleme
+    document.addEventListener('DOMContentLoaded', function() {
+        const currentPath = window.location.pathname;
+        const menuLinks = document.querySelectorAll('.side-menu .nav-link');
+        
+        menuLinks.forEach(link => {
+            if (link.getAttribute('href') === currentPath) {
+                link.classList.add('active');
+            }
+        });
+    });
+</script> 

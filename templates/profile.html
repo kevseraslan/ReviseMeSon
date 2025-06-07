@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+
+{% block title %}Profil Düzenle - ReviseMe{% endblock %}
+
+{% block styles %}
+<style>
+    body {
+        /* background-color: transparent !important; */
+        /* position: relative; */
+        background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%); /* Apply gradient directly to body */
+        min-height: 100vh; /* Ensure body covers full viewport height */
+        margin: 0; /* Remove default body margin */
+        padding: 0; /* Remove default body padding */
+    }
+    .profile-card {
+        background-color: rgba(26, 20, 64, 0.85);
+        border: 1px solid rgba(106, 55, 181, 0.3);
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        color: #FFF;
+        backdrop-filter: blur(5px);
+    }
+    .profile-card .card-header {
+        background: linear-gradient(135deg, #4e73df, #224abe);
+        color: #30E8E8;
+        border-radius: 15px 15px 0 0;
+        font-weight: 700;
+        font-size: 1.5rem;
+        text-align: center;
+        text-shadow: 0 0 10px rgba(48, 6, 75, 0.5);
+    }
+    .profile-card .btn-primary {
+        background: linear-gradient(135deg, #30E8E8, #4e73df);
+        border: none;
+        color: #fff;
+        font-weight: 700;
+    }
+    .profile-card .btn-secondary {
+        background: #fff;
+        color: #4e73df;
+        border: 1px solid #4e73df;
+        font-weight: 700;
+    }
+    
+    /* Remove padding/margin from Bootstrap container and row within welcome-bg */
+    /* This rule might be less relevant now that .welcome-bg is removed from around the content */
+    .welcome-bg .container-fluid,
+    .welcome-bg .row {
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+    
+    /* Remove padding from the main container-fluid on this page */
+    .container-fluid {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+    }
+</style>
+{% endblock %}
+
+{% block page_content %}
+<div class="container-fluid">
+    <h2 style="color: #232323; font-size: 2.2rem; font-weight: 800; text-align: left; margin-bottom: 0.8rem; margin-top: 2.5rem; letter-spacing: 2px; font-family: 'Nunito', sans-serif; text-shadow: 0 0 15px #fff, 0 0 20px #fff;"><i class="fas fa-cog me-2"></i>Profil Bilgilerini Düzenle</h2>
+    <div class="row justify-content-center align-items-center" style="min-height: 70vh;">
+        <div class="col-md-7 col-lg-6">
+            <div class="card profile-card shadow-lg border-0">
+                <div class="card-body p-4">
+                <form method="POST">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="name" class="form-label">Ad</label>
+                            <input type="text" class="form-control" id="name" name="name" value="{{ current_user.Name }}" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="surname" class="form-label">Soyad</label>
+                            <input type="text" class="form-control" id="surname" name="surname" value="{{ current_user.Surname }}" required>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="class" class="form-label">Sınıf</label>
+                            <input type="text" class="form-control" id="class" name="class" value="{{ current_user.Class }}" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="year_of_birth" class="form-label">Doğum Yılı</label>
+                            <input type="number" class="form-control" id="year_of_birth" name="year_of_birth" value="{{ current_user.YearOfBirth }}" required>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="email" class="form-label">E-posta</label>
+                        <input type="email" class="form-control" id="email" name="email" value="{{ current_user.Email }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="phone" class="form-label">Telefon Numarası</label>
+                        <input type="tel" class="form-control" id="phone" name="phone" value="{{ current_user.PhoneNumber }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="area" class="form-label">Hedef Alan</label>
+                        <input type="text" class="form-control" id="area" name="area" value="{{ current_user.Area }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="aim" class="form-label">Hedef</label>
+                        <textarea class="form-control" id="aim" name="aim" rows="3" required>{{ current_user.Aim }}</textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="current_password" class="form-label">Mevcut Şifre</label>
+                        <input type="password" class="form-control" id="current_password" name="current_password">
+                    </div>
+                    <div class="mb-3">
+                        <label for="new_password" class="form-label">Yeni Şifre</label>
+                        <input type="password" class="form-control" id="new_password" name="new_password">
+                    </div>
+                    <div class="mb-3">
+                        <label for="confirm_password" class="form-label">Yeni Şifre (Tekrar)</label>
+                        <input type="password" class="form-control" id="confirm_password" name="confirm_password">
+                    </div>
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary">Değişiklikleri Kaydet</button>
+                        <a href="{{ url_for('index') }}" class="btn btn-secondary">İptal</a>
+                    </div>
+                </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

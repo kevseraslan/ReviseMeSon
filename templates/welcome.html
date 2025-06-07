@@ -1,0 +1,656 @@
+{% extends "base_no_nav.html" %}
+{% block title %}ReviseMe - Kişiselleştirilmiş Tekrar Sistemi{% endblock title %}
+
+{% block styles %}
+<style>
+    :root {
+        /* Ana Renk Şeması - İkinci görseldeki web tasarımı */
+        --primary-color: #5b03b9; /* Koyu mor */
+        --primary-light: #8a4fff; /* Açık mor */
+        --primary-lighter: #e6e6fa; /* Açık leylak/lavanta */
+        --accent-orange: #ff5722; /* Turuncu */
+        --accent-pink: #ff4081; /* Pembe */
+        --accent-teal: #00e5ff; /* Turkuaz */
+        --accent-yellow: #ffeb3b; /* Sarı */
+        --white: #FFFFFF;
+        --light-gray: #F8F9FA;
+    }
+    
+    body {
+        font-family: 'Nunito', sans-serif;
+        background-color: var(--primary-color);
+        margin: 0;
+        padding: 0;
+        overflow-x: hidden;
+        background-image: linear-gradient(135deg, var(--primary-color) 0%, #3a0587 100%);
+    }
+    
+    /* Üst Bar (Header / Navigasyon) */
+    .navbar {
+        background-color: transparent;
+        padding: 1.5rem 2rem;
+        position: relative;
+        z-index: 100;
+    }
+    
+    .logo-container {
+        display: flex;
+        align-items: center;
+    }
+    
+    .logo {
+        width: 40px;
+        height: 40px;
+        background-color: var(--white);
+        border-radius: 8px;
+        margin-right: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--primary-color);
+        font-weight: bold;
+        font-size: 18px;
+    }
+    
+    .navbar-brand {
+        font-weight: 700;
+        font-size: 1.8rem;
+        color: var(--white);
+    }
+    
+    .btn-login {
+        background-color: transparent;
+        color: var(--white);
+        border: 2px solid var(--white);
+        padding: 8px 24px;
+        border-radius: 50px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        margin-right: 15px;
+    }
+    
+    .btn-login:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+        transform: translateY(-3px);
+    }
+    
+    .btn-register {
+        background: var(--white);
+        color: var(--primary-color);
+        border: none;
+        padding: 10px 26px;
+        border-radius: 50px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(255, 255, 255, 0.3);
+    }
+    
+    .btn-register:hover {
+        background: var(--light-gray);
+        transform: translateY(-3px);
+        box-shadow: 0 6px 20px rgba(255, 255, 255, 0.4);
+    }
+    
+    /* Ana Başlık Bölümü (Hero Section) */
+    .hero-section {
+        height: 100vh;
+        display: flex;
+        align-items: center;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .hero-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        position: relative;
+        z-index: 10;
+    }
+    
+    .hero-content {
+        flex: 1;
+        max-width: 500px;
+        padding: 2rem;
+        z-index: 20;
+        color: var(--white);
+    }
+    
+    .hero-illustration {
+        flex: 1;
+        max-width: 600px;
+        height: 500px;
+        position: relative;
+        z-index: 20;
+    }
+    
+    /* Dekoratif şekiller ve arka plan elemanları */
+    .decorative-elements {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        z-index: 5;
+    }
+    
+    .circle {
+        position: absolute;
+        border-radius: 50%;
+        opacity: 0.2;
+    }
+    
+    .circle-1 {
+        width: 300px;
+        height: 300px;
+        background-color: var(--accent-pink);
+        top: -100px;
+        left: -100px;
+    }
+    
+    .circle-2 {
+        width: 200px;
+        height: 200px;
+        background-color: var(--accent-teal);
+        bottom: 100px;
+        right: 50px;
+    }
+    
+    .circle-3 {
+        width: 150px;
+        height: 150px;
+        background-color: var(--accent-yellow);
+        top: 200px;
+        left: 10%;
+    }
+    
+    .dots {
+        position: absolute;
+        width: 200px;
+        height: 200px;
+        background-image: radial-gradient(circle, rgba(255,255,255,0.3) 2px, transparent 3px);
+        background-size: 20px 20px;
+    }
+    
+    .dots-1 {
+        top: 50px;
+        right: 10%;
+    }
+    
+    .dots-2 {
+        bottom: 50px;
+        left: 5%;
+    }
+    
+    .star {
+        position: absolute;
+        width: 30px;
+        height: 30px;
+        background-color: var(--accent-yellow);
+        clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+        opacity: 0.7;
+        animation: starTwinkle 3s ease-in-out infinite;
+    }
+    
+    .star-1 {
+        top: 100px;
+        right: 25%;
+    }
+    
+    .star-2 {
+        top: 70%;
+        left: 20%;
+        transform: scale(0.7);
+    }
+    
+    .star-3 {
+        top: 30%;
+        right: 10%;
+        transform: scale(1.2);
+    }
+    
+    /* Bilgisayar ekranı illüstrasyonu */
+    .computer-screen {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    
+    .monitor {
+        width: 380px;
+        height: 260px;
+        background: var(--white);
+        border-radius: 10px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        padding: 15px;
+        position: relative;
+        z-index: 2;
+    }
+    
+    .screen {
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(45deg, #f5f5f5, #fff);
+        border-radius: 5px;
+        overflow: hidden;
+        position: relative;
+    }
+    
+    .screen-content {
+        padding: 20px;
+        position: relative;
+    }
+    
+    .screen-block {
+        height: 15px;
+        border-radius: 3px;
+        margin-bottom: 10px;
+    }
+    
+    .block-red {
+        background-color: var(--accent-orange);
+        width: 70%;
+    }
+    
+    .block-blue {
+        background-color: var(--accent-teal);
+        width: 85%;
+    }
+    
+    .block-green {
+        background-color: var(--primary-light);
+        width: 60%;
+    }
+    
+    .block-yellow {
+        background-color: var(--accent-yellow);
+        width: 80%;
+    }
+    
+    .monitor-base {
+        width: 100px;
+        height: 60px;
+        background: #e0e0e0;
+        border-radius: 0 0 50% 50%;
+        margin: -10px auto 0;
+        position: relative;
+        z-index: 1;
+    }
+    
+    .floating-elements {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+    }
+    
+    .floating-element {
+        position: absolute;
+        border-radius: 8px;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        animation: float 6s ease-in-out infinite;
+    }
+    
+    .element-1 {
+        width: 80px;
+        height: 60px;
+        background-color: var(--accent-orange);
+        top: 20%;
+        left: -40px;
+        transform: rotate(-15deg);
+        animation-delay: 0.5s;
+    }
+    
+    .element-2 {
+        width: 50px;
+        height: 50px;
+        background-color: var(--accent-teal);
+        bottom: 30%;
+        right: -20px;
+        transform: rotate(10deg);
+        animation-delay: 1.5s;
+    }
+    
+    .element-3 {
+        width: 40px;
+        height: 40px;
+        background-color: var(--accent-yellow);
+        top: 10%;
+        right: 30px;
+        transform: rotate(25deg);
+        animation-delay: 1s;
+    }
+    
+    .element-4 {
+        width: 35px;
+        height: 35px;
+        background-color: var(--accent-pink);
+        bottom: 15%;
+        left: 40px;
+        transform: rotate(-10deg);
+        animation-delay: 2s;
+    }
+    
+    @keyframes float {
+        0%, 100% { transform: translateY(0) rotate(0); }
+        50% { transform: translateY(-15px) rotate(5deg); }
+    }
+    
+    @keyframes starTwinkle {
+        0%, 100% { transform: scale(1); opacity: 0.7; }
+        50% { transform: scale(1.2); opacity: 1; }
+    }
+    
+    /* Başlık ve Metin Stilleri */
+    .headline {
+        font-size: 4rem;
+        font-weight: 800;
+        color: var(--white);
+        margin-bottom: 0.5rem;
+        line-height: 1.1;
+    }
+    
+    .headline-sub {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: var(--accent-pink);
+        margin-bottom: 1.5rem;
+    }
+    
+    .subheadline {
+        font-size: 1.1rem;
+        color: rgba(255, 255, 255, 0.9);
+        margin-bottom: 2.5rem;
+        line-height: 1.6;
+    }
+    
+    /* Butonlar */
+    .btn-primary {
+        background: var(--accent-yellow);
+        color: var(--primary-color);
+        border: none;
+        padding: 12px 30px;
+        border-radius: 50px;
+        font-size: 1rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        margin-right: 1rem;
+        box-shadow: 0 8px 20px rgba(255, 235, 59, 0.3);
+    }
+    
+    .btn-primary:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 25px rgba(255, 235, 59, 0.4);
+    }
+    
+    /* Özellikler Bölümü */
+    .features-section {
+        background-color: var(--white);
+        padding: 6rem 0;
+        position: relative;
+        box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.1);
+    }
+    
+    .features-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 2rem;
+    }
+    
+    .section-title {
+        text-align: center;
+        font-size: 2.5rem;
+        color: var(--primary-color);
+        margin-bottom: 3.5rem;
+        font-weight: 800;
+        position: relative;
+    }
+    
+    .section-title::after {
+        content: '';
+        position: absolute;
+        bottom: -15px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 80px;
+        height: 5px;
+        background: linear-gradient(to right, var(--primary-color), var(--primary-light));
+        border-radius: 50px;
+    }
+    
+    .features-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        gap: 2.5rem;
+    }
+    
+    .feature-card {
+        background: white;
+        border-radius: 15px;
+        padding: 2.5rem;
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+        transition: all 0.4s ease;
+        position: relative;
+        overflow: hidden;
+        border: 1px solid #f0f0f0;
+    }
+    
+    .feature-card:hover {
+        transform: translateY(-15px);
+        box-shadow: 0 25px 50px rgba(91, 3, 185, 0.15);
+    }
+    
+    .feature-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 5px;
+        background: linear-gradient(to right, var(--primary-color), var(--primary-light));
+    }
+    
+    .feature-icon {
+        width: 80px;
+        height: 80px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 32px;
+        background: var(--primary-lighter);
+        color: var(--primary-color);
+        border-radius: 20px;
+        margin-bottom: 2rem;
+        box-shadow: 0 10px 20px rgba(91, 3, 185, 0.1);
+    }
+    
+    .feature-title {
+        font-size: 1.6rem;
+        font-weight: 700;
+        color: var(--primary-color);
+        margin-bottom: 1rem;
+    }
+    
+    .feature-description {
+        color: #666;
+        line-height: 1.7;
+    }
+    
+    /* Responsive Düzenlemeler */
+    @media (max-width: 992px) {
+        .hero-container {
+            flex-direction: column-reverse;
+            text-align: center;
+        }
+        
+        .hero-content, .hero-illustration {
+            max-width: 100%;
+            padding: 1rem;
+        }
+        
+        .headline {
+            font-size: 3rem;
+        }
+        
+        .headline-sub {
+            font-size: 1.8rem;
+        }
+        
+        .hero-illustration {
+            height: 400px;
+        }
+        
+        .monitor {
+            width: 300px;
+            height: 200px;
+        }
+    }
+    
+    @media (max-width: 768px) {
+        .navbar {
+            padding: 1rem;
+        }
+        
+        .headline {
+            font-size: 2.5rem;
+        }
+        
+        .feature-card {
+            padding: 2rem;
+        }
+        
+        .hero-illustration {
+            height: 300px;
+        }
+        
+        .monitor {
+            width: 260px;
+            height: 180px;
+        }
+    }
+    
+    @media (max-width: 576px) {
+        .btn-primary, .btn-login, .btn-register {
+            width: 100%;
+            margin-bottom: 1rem;
+            margin-right: 0;
+        }
+        
+        .headline {
+            font-size: 2rem;
+        }
+        
+        .hero-illustration {
+            height: 250px;
+        }
+        
+        .monitor {
+            width: 220px;
+            height: 160px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Üst Bar (Header / Navigasyon) -->
+<nav class="navbar navbar-expand-lg">
+    <div class="container">
+        <div class="logo-container">
+            <div class="logo">R</div>
+            <a class="navbar-brand" href="#">ReviseMe</a>
+        </div>
+        <div class="d-flex">
+            <a class="btn btn-login" href="{{ url_for('login') }}">Giriş Yap</a>
+            <a class="btn btn-register" href="{{ url_for('register') }}">Kayıt Ol</a>
+        </div>
+    </div>
+</nav>
+
+<!-- Dekoratif Arka Plan Elemanları -->
+<div class="decorative-elements">
+    <div class="circle circle-1"></div>
+    <div class="circle circle-2"></div>
+    <div class="circle circle-3"></div>
+    <div class="dots dots-1"></div>
+    <div class="dots dots-2"></div>
+    <div class="star star-1"></div>
+    <div class="star star-2"></div>
+    <div class="star star-3"></div>
+</div>
+
+<!-- Ana Başlık Bölümü (Hero Section) -->
+<section class="hero-section">
+    <div class="hero-container">
+        <div class="hero-content">
+            <h1 class="headline">REVISEME</h1>
+            <h1 class="headline-sub">Öğren, Geliş, Yenilen</h1>
+            <p class="subheadline">ReviseMe ile tekrarlarını planlayarak öğrenmeni kalıcı hale getir. Akıllı tekrar sistemi, ilerleme takibi ve daha fazlasıyla öğrenme yolculuğunu kusursuz hale getir.</p>
+            <a href="{{ url_for('register') }}" class="btn btn-primary">Keşfet</a>
+        </div>
+        
+        <div class="hero-illustration">
+            <div class="computer-screen">
+                <div class="monitor">
+                    <div class="screen">
+                        <div class="screen-content">
+                            <div class="screen-block block-red"></div>
+                            <div class="screen-block block-blue"></div>
+                            <div class="screen-block block-green"></div>
+                            <div class="screen-block block-yellow"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="monitor-base"></div>
+                <div class="floating-elements">
+                    <div class="floating-element element-1"></div>
+                    <div class="floating-element element-2"></div>
+                    <div class="floating-element element-3"></div>
+                    <div class="floating-element element-4"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Özellikler Bölümü -->
+<section class="features-section">
+    <div class="features-container">
+        <h2 class="section-title">Öğrenme Yolculuğunuzu Geliştirin</h2>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-brain"></i>
+                </div>
+                <h3 class="feature-title">Akıllı Tekrar Sistemi</h3>
+                <p class="feature-description">Öğrenme bilimlerine dayalı sistemimiz, bilgileri uzun süreli hafızaya taşımanız için en uygun tekrar zamanlarını belirler.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <h3 class="feature-title">İlerleme Takibi</h3>
+                <p class="feature-description">Çalışma istatistiklerinizi takip edin, ilerlemenizi görün ve öğrenme alışkanlıklarınızı optimize edin.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-mobile-alt"></i>
+                </div>
+                <h3 class="feature-title">Her Yerde Erişim</h3>
+                <p class="feature-description">Tüm cihazlarınızda senkronize çalışın. İster evde, ister yolda, notlarınıza ve tekrarlarınıza her an erişin.</p>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

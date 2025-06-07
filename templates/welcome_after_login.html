@@ -1,0 +1,19 @@
+{% extends 'base.html' %} {# Projenizin ana şablon dosyasına göre burayı güncelleyin #}
+
+{% block navbar %}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 style="color: #30E8E8; font-size: 2.2rem; font-weight: 800; text-align: left; margin-bottom: 0.8rem; margin-top: 2.5rem; letter-spacing: 2px; font-family: 'Nunito', sans-serif; text-shadow: 0 0 15px rgba(48, 6, 75, 0.5), 0 0 20px rgba(48, 6, 75, 0.5);">Hoş Geldiniz!</h1>
+    <p>Lütfen devam etmek için bir seçenek belirleyin:</p>
+
+    <div class="row justify-content-center mt-4"> {# Seçenek butonlarını ortalamak için #}
+        <div class="col-md-4 mb-3"> {# Buton boyutu #}
+            <a href="{{ url_for('index') }}" class="btn btn-primary btn-lg w-100">Takip Sistemi</a> {# Takip sistemi sayfasına yönlendiren link (index rotası varsayıldı) #}
+        </div>
+        <div class="col-md-4 mb-3"> {# Buton boyutu #}
+            <a href="{{ url_for('hedefleyici') }}" class="btn btn-success btn-lg w-100">Hedefleyici</a> {# Hedefleyici sayfası linki (şu an için placeholder #) #}
+        </div>
+    </div>
+</div>
+{% endblock %} 

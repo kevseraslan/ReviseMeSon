@@ -1,0 +1,250 @@
+{% extends "base.html" %}
+
+{% block title %}Yeni Soru Ekle - ReviseMe{% endblock %}
+
+{% block styles %}
+<style>
+    :root {
+        --primary-color: #6a37b5;
+        --secondary-color: #9c66da;
+        --accent-color: #ff70a6;
+        --accent-turquoise: #2ecdc8;
+        --text-color: #333;
+        --card-background: rgba(255, 255, 255, 0.8);
+        --card-border: rgba(106, 55, 181, 0.3);
+        --input-background: rgba(255, 255, 255, 0.9);
+        --input-border: #ccc;
+        --button-primary-background: var(--primary-color);
+        --button-primary-text: #fff;
+        --button-secondary-background: var(--secondary-color);
+        --button-secondary-text: #fff;
+        --danger-color: #e74c3c;
+        --success-color: #2ecc71;
+        --warning-color: #f39c12;
+        --info-color: #3498db;
+    }
+    body {
+        font-family: 'Nunito', sans-serif;
+        background-color: #f4f7f6;
+        color: var(--text-color);
+        line-height: 1.6;
+        position: relative;
+    }
+    @keyframes twinkle {
+        0% { opacity: 0.3; }
+        50% { opacity: 1; }
+        100% { opacity: 0.3; }
+    }
+    .stars {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: -1;
+    }
+    .star {
+        position: absolute;
+        width: 2px;
+        height: 2px;
+        background-color: white;
+        border-radius: 50%;
+    }
+    .star-1 { top: 10%; left: 20%; animation: twinkle 3s infinite ease-in-out; }
+    .star-2 { top: 15%; left: 50%; animation: twinkle 4s infinite ease-in-out; }
+    .star-3 { top: 25%; left: 80%; animation: twinkle 5s infinite ease-in-out; }
+    .star-4 { top: 40%; left: 10%; animation: twinkle 4.5s infinite ease-in-out; }
+    .star-5 { top: 60%; left: 30%; animation: twinkle 3.5s infinite ease-in-out; }
+    .star-6 { top: 75%; left: 60%; animation: twinkle 4s infinite ease-in-out; }
+    .star-7 { top: 85%; left: 90%; animation: twinkle 3s infinite ease-in-out; }
+    h1.page-header {
+        font-family: 'Nunito', sans-serif;
+        font-size: 2.2rem;
+        font-weight: 800;
+        color: #232323;
+        text-shadow: 0 0 15px #fff, 0 0 20px #fff;
+        text-align: left;
+        margin-bottom: 0.8rem;
+        margin-top: 2.5rem;
+        letter-spacing: 2px;
+    }
+</style>
+{{ super() }}
+{% endblock styles %}
+
+{% block page_content %}
+<div class="stars">
+    <div class="star star-1"></div>
+    <div class="star star-2"></div>
+    <div class="star star-3"></div>
+    <div class="star star-4"></div>
+    <div class="star star-5"></div>
+    <div class="star star-6"></div>
+    <div class="star star-7"></div>
+</div>
+<div class="add-question-bg"></div>
+<div class="inner-content-wrapper" style="margin-top: -1rem;">
+    <div style="display: flex; align-items: flex-start; justify-content: flex-start; gap: 1.2rem; margin-bottom: 1.5rem;">
+        <img src="/static/images/Photos.jpg" alt="Motivational Image" style="width: 75px; height: 75px; object-fit: cover; border-radius: 10px; box-shadow: 0 2px 8px #b2fefa; margin-top: 10px;">
+        <h1 class="page-header" style="margin: 0;">Yeni Soru Ekle</h1>
+    </div>
+    <!-- Üst Menü -->
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-4">
+        <a href="{{ url_for('index') }}" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left"></i> Geri Dön
+        </a>
+    </div>
+    <!-- Form -->
+    <div class="d-flex justify-content-center">
+        <div class="card shadow-lg p-4 dark-card" style="width:100%; max-width:600px; border-radius: 1.5rem; background: #232946; color: #f8f9fc;">
+            <form method="POST" enctype="multipart/form-data">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <div class="mb-3">
+                    <label for="topic" class="form-label">Konu</label>
+                    <input type="text" class="form-control dark-input" id="topic" name="topic" required>
+                </div>
+                <div class="mb-3">
+                    <label for="category" class="form-label">Kategori</label>
+                    <select class="form-select dark-input" id="category" name="category" required>
+                        <option value="">Kategori Seçin</option>
+                        {% for category in categories %}
+                        <option value="{{ category.CategoryId }}">{{ category.Name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="difficulty" class="form-label">Zorluk Seviyesi</label>
+                    <select class="form-select dark-input" id="difficulty" name="difficulty" required>
+                        <option value="">Seçiniz</option>
+                        <option value="Kolay">Kolay</option>
+                        <option value="Orta">Orta</option>
+                        <option value="Zor">Zor</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="explanation" class="form-label">Açıklama (isteğe bağlı)</label>
+                    <textarea class="form-control dark-input" id="explanation" name="explanation" rows="2"></textarea>
+                </div>
+                <div class="mb-3">
+                    <label for="question_image" class="form-label">Soru Görseli</label>
+                    <input type="file" class="form-control dark-input" id="question_image" name="question_image" accept="image/*">
+                </div>
+                <div class="d-grid gap-2 mt-4">
+                    <button type="submit" class="btn btn-primary" style="background: linear-gradient(135deg, #30e8e8, #8ec5fc); border: none; font-weight: bold; box-shadow: 0 2px 8px #b2fefa;">Soru Ekle</button>
+                    <a href="{{ url_for('index') }}" class="btn btn-secondary">İptal</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<style>
+.add-question-bg {
+    background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%);
+    position: fixed;
+    left: 0; top: 0; width: 100vw; height: 100vh;
+    z-index: -1;
+}
+.dark-card label.form-label {
+    color: #f8f9fc;
+    font-weight: 600;
+}
+.dark-card input.form-control,
+.dark-card select.form-select,
+.dark-card textarea.form-control {
+    border-radius: 0.75rem;
+    border: 1px solid #8ec5fc;
+    background: #232946;
+    color: #f8f9fc;
+}
+.dark-card input.form-control:focus,
+.dark-card select.form-select:focus,
+.dark-card textarea.form-control:focus {
+    border-color: #30e8e8;
+    box-shadow: 0 0 0 0.2rem #8ec5fc44;
+    background: #232946;
+    color: #f8f9fc;
+}
+.dark-card ::placeholder {
+    color: #b2b8d6;
+    opacity: 1;
+}
+</style>
+{% endblock %}
+
+{% block extra_styles %}
+<style>
+    .dark-card {
+        background: #232946 url('/static/images/Photos.jpg') no-repeat center center; /* Arka plan görseli eklendi */
+        background-size: cover; /* Görseli kartı kaplayacak şekilde boyutlandır */
+        color: #f8f9fc;
+        position: relative; /* İçerik üstte görünsün diye */
+    }
+
+    /* Arka plan görseli üzerine hafif koyuluk eklemek için overlay */
+    .dark-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5); /* Yarı saydam siyah overlay */
+        border-radius: 1.5rem; /* Kart köşeleriyle uyumlu */
+        z-index: 1; /* İçerik ile arka plan arasında */
+    }
+
+    /* Form içeriğinin overlay üzerinde görünür olması için z-index ayarı */
+    .dark-card > form,
+    .dark-card label,
+    .dark-card input,
+    .dark-card select,
+    .dark-card textarea,
+    .dark-card button {
+        position: relative;
+        z-index: 2; /* Overlay'den daha yüksek */
+    }
+
+    .dark-card label.form-label {
+        color: #f8f9fc; /* Yazı rengini belirginleştir */
+    }
+
+    .dark-card input.form-control,
+    .dark-card select.form-select,
+    .dark-card textarea.form-control {
+        background: rgba(255, 255, 255, 0.1); /* Input arka planını yarı saydam yap */
+        border-color: rgba(142, 197, 252, 0.5); /* Border rengini ayarla */
+        color: #f8f9fc; /* Input yazı rengini ayarla */
+    }
+
+    .dark-card input.form-control:focus,
+    .dark-card select.form-select:focus,
+    .dark-card textarea.form-control:focus {
+        border-color: #30e8e8; /* Focus border rengini ayarla */
+        box-shadow: 0 0 0 0.2rem rgba(142, 197, 252, 0.4);
+        background: rgba(255, 255, 255, 0.15); /* Focus arka planını biraz daha belirgin yap */
+        color: #f8f9fc;
+    }
+
+    .dark-card ::placeholder {
+        color: rgba(248, 249, 252, 0.7); /* Placeholder rengini ayarla */
+        opacity: 1;
+    }
+
+    /* Buton stilini temaya uygun yap */
+    .dark-card .btn-primary {
+        background: linear-gradient(135deg, #30e8e8, #8ec5fc); /* Gradyan arka plan */
+        border: none;
+        font-weight: bold;
+        box-shadow: 0 2px 8px rgba(178, 250, 250, 0.4);
+        color: #232946; /* Koyu yazı rengi */
+    }
+
+    .dark-card .btn-secondary {
+        background-color: rgba(255, 255, 255, 0.1); /* Yarı saydam beyaz */
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        color: #f8f9fc;
+    }
+
+</style>
+{% endblock %} 

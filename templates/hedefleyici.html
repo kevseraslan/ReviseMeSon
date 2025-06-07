@@ -1,0 +1,318 @@
+{% extends 'base.html' %}
+
+{% block title %}Planlayıcı{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+<style>
+    body {
+        background-color: transparent !important;
+        position: relative;
+    }
+    
+    body::before {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: url('/static/images/pastel-background.jpg');
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        z-index: -1;
+    }
+    
+    h1 {
+        color: #30E8E8;
+        font-size: 3rem;
+        font-weight: 800;
+        margin-bottom: 1.5rem;
+        text-shadow: 0 0 15px rgba(48, 6, 75, 0.8), 0 0 20px rgba(48, 6, 75, 0.4);
+    }
+    
+    p {
+        color: #FFF;
+        font-size: 1.2rem;
+        text-shadow: 0 0 8px rgba(0, 0, 0, 0.7);
+        margin-bottom: 2rem;
+    }
+    
+    /* Sidebar Styles */
+    .sidebar-wrapper {
+        /* Sadece görsel stil bırakıldı */
+        background: linear-gradient(135deg, #2d225a 0%, #3a2e6e 60%, #232946 100%);
+        box-shadow: 2px 0 8px rgba(0,0,0,0.12);
+        border-right: 1px solid rgba(48,232,232,0.05);
+        transition: all 0.3s ease;
+    }
+    
+    .sidebar-wrapper.sidebar-collapsed {
+        /* sadece style.css'deki layout kuralları geçerli olacak */
+    }
+    
+    .sidebar-wrapper .btn {
+        font-weight: 600;
+        font-size: 1.1rem;
+        border-radius: 8px;
+        border: 1.5px solid #30E8E8;
+        color: #30E8E8;
+        background: transparent;
+        transition: background 0.2s, color 0.2s;
+    }
+    
+    .sidebar-wrapper .btn:hover {
+        background: #30E8E8;
+        color: #232946;
+    }
+    
+    .sidebar-wrapper ul.nav {
+        margin-top: 1.5rem;
+        padding-left: 0;
+    }
+    
+    .sidebar-wrapper .nav-link {
+        color: #fff;
+        font-size: 1.08rem;
+        font-weight: 500;
+        padding: 1rem 1.5rem 1rem 2.2rem;
+        border-left: 4px solid transparent;
+        border-radius: 0 16px 16px 0;
+        margin-bottom: 2px;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        background: transparent;
+        position: relative;
+        z-index: 1031; /* Tıklanabilir olması için yüksek z-index */
+    }
+    
+    .sidebar-wrapper .nav-link i {
+        margin-right: 12px;
+        font-size: 1.2rem;
+        width: 22px;
+        text-align: center;
+    }
+    
+    .sidebar-wrapper .nav-link.active {
+        background: linear-gradient(90deg, rgba(48,232,232,0.18) 0%, rgba(48,232,232,0.08) 100%);
+        color: #30E8E8;
+        border-left: 4px solid #30E8E8;
+        font-weight: 700;
+        box-shadow: 0 2px 8px 0 rgba(48,232,232,0.04);
+    }
+    
+    .sidebar-wrapper .nav-link:hover {
+        background: rgba(48,232,232,0.10);
+        color: #30E8E8;
+        border-left: 4px solid #30E8E8;
+    }
+    
+    .sidebar-wrapper .nav-link:active {
+        background: rgba(48,232,232,0.18);
+        color: #30E8E8;
+    }
+    
+    /* Ana içerik alanı düzenlemesi */
+    .main-content-area {
+        /* Sadece görsel stil bırakıldı */
+        transition: all 0.3s ease;
+        /* display: flex; */
+        /* justify-content: center; */
+    }
+    
+    .main-content-area.sidebar-collapsed {
+        /* sadece style.css'deki layout kuralları geçerli olacak */
+    }
+    
+    #wrapper {
+        display: flex !important;
+        width: 100%;
+        position: relative;
+        overflow-x: hidden;
+    }
+    
+    /* İç içerik için düzenleme */
+    .inner-content-wrapper {
+        max-width: 1200px;
+        width: 100%;
+        padding: 32px 24px;
+        box-sizing: border-box;
+    }
+    
+    /* Simüle edilmiş yıldızlar */
+    @keyframes twinkle {
+        0% { opacity: 0.3; }
+        50% { opacity: 1; }
+        100% { opacity: 0.3; }
+    }
+    
+    .stars {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: -1;
+    }
+    
+    .star {
+        position: absolute;
+        width: 2px;
+        height: 2px;
+        background-color: white;
+        border-radius: 50%;
+    }
+    
+    .star-1 { top: 10%; left: 20%; animation: twinkle 3s infinite ease-in-out; }
+    .star-2 { top: 15%; left: 50%; animation: twinkle 4s infinite ease-in-out; }
+    .star-3 { top: 25%; left: 80%; animation: twinkle 5s infinite ease-in-out; }
+    .star-4 { top: 40%; left: 10%; animation: twinkle 4.5s infinite ease-in-out; }
+    .star-5 { top: 60%; left: 30%; animation: twinkle 3.5s infinite ease-in-out; }
+    .star-6 { top: 75%; left: 60%; animation: twinkle 4s infinite ease-in-out; }
+    .star-7 { top: 85%; left: 90%; animation: twinkle 3s infinite ease-in-out; }
+    
+    /* Sidebar içindeki menü metinleri için stil */
+    .sidebar-collapsed .menu-text {
+        display: none;
+    }
+    
+    /* İçerik konteynerları için stil */
+    .content-container {
+        width: 100%;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 15px;
+    }
+    
+    /* Sidebar kapalıyken ana içeriği ortala ve genişliği sınırla */
+    @media (max-width: 991.98px) {
+        #wrapper:not(.sidebar-collapsed) > .sidebar-wrapper + * {
+            margin: 0 auto !important;
+            max-width: 1200px;
+            width: 100% !important;
+            display: flex;
+            justify-content: center;
+        }
+    }
+    
+    .main-content-area.sidebar-collapsed, .main-content-area.sidebar-collapsed .content-container {
+        margin: 0 auto !important;
+        max-width: 1200px;
+        width: 100% !important;
+        display: flex;
+        justify-content: center;
+    }
+</style>
+{% endblock %}
+
+{% block page_content %}
+    <div id="wrapper">
+        <!-- Hamburger Menu Button -->
+        {# <button id="sidebarToggle" class="hamburger-menu">
+            <i class="fas fa-bars"></i>
+        </button> #}
+
+        <div class="sidebar-wrapper" id="sidebar-wrapper">
+            {% include 'components/side_menu_hedef.html' %}
+        </div>
+        {% if request.endpoint in ['kitaplarim', 'gorevlerim', 'listening', 'report'] %}
+            {% block hedefleyici_content %}{% endblock %}
+        {% else %}
+        <div class="main-content-area" id="main-content-col">
+            <div class="content-container">
+                <div class="stars">
+                    <div class="star star-1"></div>
+                    <div class="star star-2"></div>
+                    <div class="star star-3"></div>
+                    <div class="star star-4"></div>
+                    <div class="star star-5"></div>
+                    <div class="star star-6"></div>
+                    <div class="star star-7"></div>
+                </div>
+                <div class="mt-3 mb-2">
+                    <a href="{{ url_for('welcome_options') }}" class="btn btn-outline-light">
+                        <i class="fas fa-arrow-left"></i> Geri Dön
+                    </a>
+                </div>
+                {{ self.hedefleyici_content() }}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+{% endblock %}
+
+{% block scripts %}
+{#
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Sidebar toggle butonu
+        const sidebarToggle = document.getElementById('sidebarToggle');
+        const sidebar = document.getElementById('sidebar-wrapper');
+        const mainContent = document.getElementById('main-content-col');
+        
+        if (sidebarToggle && sidebar && mainContent) {
+            // Toggle sidebar ve içerik alanı
+            function toggleSidebar() {
+                sidebar.classList.toggle('sidebar-collapsed');
+                mainContent.classList.toggle('sidebar-collapsed');
+                
+                // Sidebar durumunu kontrol et ve hamburger menüyü güncelle
+                if (sidebar.classList.contains('sidebar-collapsed')) {
+                    // Sidebar kapalıysa, hamburger menüyü sola ayarla
+                    sidebarToggle.style.left = '15px';
+                } else {
+                    // Sidebar açıksa, hamburger menüyü sidebarın sağına ayarla
+                    sidebarToggle.style.left = '265px';
+                }
+                
+                // Kullanıcı tercihini local storage'a kaydet
+                const isCollapsed = sidebar.classList.contains('sidebar-collapsed');
+                localStorage.setItem('plannerSidebarCollapsed', isCollapsed);
+                
+                // DOM'un yeniden hesaplanmasını için zorla
+                setTimeout(function() {
+                    window.dispatchEvent(new Event('resize'));
+                }, 300); // Animasyon tamamlandıktan sonra
+            }
+            
+            sidebarToggle.addEventListener('click', toggleSidebar);
+            
+            // Sayfa yüklendiğinde kullanıcı tercihini kontrol et
+            const savedState = localStorage.getItem('plannerSidebarCollapsed');
+            if (savedState === 'true') {
+                sidebar.classList.add('sidebar-collapsed');
+                mainContent.classList.add('sidebar-collapsed');
+                sidebarToggle.style.left = '15px';
+            } else {
+                // Sidebar açıksa, hamburger menüyü sidebarın sağına ayarla
+                sidebarToggle.style.left = '265px';
+            }
+            
+            // Mobil cihazlarda responsive davranış
+            function checkWindowSize() {
+                if (window.innerWidth < 768) {
+                    sidebar.classList.add('sidebar-collapsed');
+                    mainContent.classList.add('sidebar-collapsed');
+                    sidebarToggle.style.left = '15px';
+                }
+            }
+            
+            // Sayfa yüklendiğinde ve boyut değiştiğinde kontrol et
+            checkWindowSize();
+            window.addEventListener('resize', checkWindowSize);
+            
+            // Sidebar menü öğelerine tıklanabilirliği iyileştirme
+            const sidebarLinks = sidebar.querySelectorAll('a');
+            sidebarLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.stopPropagation(); // Event'in daha fazla yayılmasını önle
+                });
+            });
+        }
+    });
+</script>
+#}
+{% endblock %} 

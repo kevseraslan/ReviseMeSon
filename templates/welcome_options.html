@@ -1,0 +1,422 @@
+{% extends "base_no_nav.html" %}
+
+{% block title %}Hoş Geldiniz - ReviseMe{% endblock %}
+
+{% block styles %}
+<style>
+    :root {
+        /* Ana Renk Şeması */
+        --primary-color: #6A37B5;
+        --primary-light: #8451D1;
+        --primary-lighter: #A98AE5;
+        --primary-dark: #4A2882;
+        --white: #FFFFFF;
+        --light-gray: #F8F9FC;
+        
+        /* Vurgu Renkleri */
+        --accent-turquoise: #2ECDC8;
+        --accent-pink: #F56FAD;
+        --accent-blue: #4A8FE7;
+        --accent-orange: #FF9966;
+    }
+    
+    body {
+        font-family: 'Nunito', sans-serif;
+        color: #FFF;
+        position: relative;
+        background-color: #0A0523;
+        margin: 0;
+        padding: 0;
+        min-height: 100vh;
+        overflow-x: hidden;
+    }
+    
+    body::before {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%);
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        z-index: -1;
+    }
+    
+    .welcome-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem;
+        position: relative;
+        z-index: 1;
+    }
+    
+    .welcome-header {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+    
+    .welcome-title {
+        font-size: 3.5rem;
+        color: #000000;
+        font-weight: 800;
+        margin-bottom: 0.8rem;
+        text-shadow: 0 0 15px rgba(48, 6, 75, 0.8), 0 0 20px rgba(48, 6, 75, 0.4);
+        letter-spacing: 2px;
+        font-family: 'Nunito', sans-serif;
+    }
+    
+    .welcome-subtitle {
+        font-size: 1.2rem;
+        color: #FFF;
+        max-width: 800px;
+        margin: 0 auto 2rem auto;
+        text-shadow: 0 0 8px rgba(0, 0, 0, 0.7);
+    }
+    
+    .options-container {
+        display: flex;
+        justify-content: center;
+        gap: 2rem;
+        margin-bottom: 3rem;
+        flex-wrap: wrap;
+    }
+    
+    .option-card {
+        background-color: rgba(26, 20, 64, 0.8);
+        border: 1px solid rgba(106, 55, 181, 0.3);
+        border-radius: 15px;
+        overflow: hidden;
+        width: 300px;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        transition: all 0.3s ease;
+        backdrop-filter: blur(5px);
+    }
+    
+    .option-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 30px rgba(48, 6, 75, 0.3);
+        border-color: var(--accent-turquoise);
+    }
+    
+    .option-icon {
+        height: 150px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 3rem;
+        color: white;
+    }
+    
+    .option-card:nth-child(1) .option-icon {
+        background: linear-gradient(135deg, rgba(173, 142, 216, 0.8), rgba(132, 81, 209, 0.8));
+        box-shadow: 0 0 15px rgba(106, 55, 181, 0.5);
+    }
+    
+    .option-card:nth-child(2) .option-icon {
+        background: linear-gradient(135deg, rgba(173, 142, 216, 0.8), rgba(132, 81, 209, 0.8));
+        box-shadow: 0 0 15px rgba(106, 55, 181, 0.5);
+    }
+    
+    .option-content {
+        padding: 1.5rem;
+    }
+    
+    .option-title {
+        font-size: 1.3rem;
+        font-weight: 700;
+        margin-bottom: 0.8rem;
+        color: #FFF;
+        text-shadow: 0 0 8px rgba(0, 0, 0, 0.5);
+    }
+    
+    .option-description {
+        color: #CCC;
+        margin-bottom: 1.5rem;
+        line-height: 1.5;
+        font-size: 0.95rem;
+    }
+    
+    .btn-start {
+        display: inline-block;
+        padding: 0.8rem 1.5rem;
+        border-radius: 30px;
+        font-weight: 600;
+        text-decoration: none;
+        color: white;
+        transition: all 0.3s ease;
+        border: none;
+        cursor: pointer;
+        width: 100%;
+        text-align: center;
+    }
+    
+    .option-card:nth-child(1) .btn-start {
+        background: linear-gradient(45deg, var(--primary-color), var(--primary-light));
+    }
+    
+    .option-card:nth-child(1) .btn-start:hover {
+        background: linear-gradient(45deg, var(--primary-light), var(--primary-color));
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(106, 55, 181, 0.4);
+    }
+    
+    .option-card:nth-child(2) .btn-start {
+        background: linear-gradient(45deg, var(--primary-color), var(--primary-light));
+    }
+    
+    .option-card:nth-child(2) .btn-start:hover {
+        background: linear-gradient(45deg, var(--primary-light), var(--primary-color));
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(106, 55, 181, 0.4);
+    }
+    
+    /* Özellik Kartları Bölümü */
+    .features-section {
+        margin-top: 4rem;
+        text-align: center;
+        background-color: rgba(26, 20, 64, 0.7);
+        padding: 2rem;
+        border-radius: 20px;
+        backdrop-filter: blur(10px);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        border: 1px solid rgba(106, 55, 181, 0.2);
+    }
+    
+    .features-title {
+        font-size: 1.8rem;
+        color: var(--white);
+        margin-bottom: 1rem;
+        font-weight: 700;
+        text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    }
+    
+    .features-subtitle {
+        color: #CCC;
+        margin-bottom: 3rem;
+        max-width: 700px;
+        margin-left: auto;
+        margin-right: auto;
+        text-shadow: 0 0 8px rgba(0, 0, 0, 0.5);
+    }
+    
+    .features-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 2rem;
+    }
+    
+    .feature-card {
+        background-color: rgba(26, 20, 64, 0.8);
+        border: 1px solid rgba(106, 55, 181, 0.3);
+        border-radius: 15px;
+        padding: 2rem;
+        text-align: center;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        transition: all 0.3s ease;
+        backdrop-filter: blur(5px);
+    }
+    
+    .feature-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(46, 205, 200, 0.3);
+        border-color: var(--accent-turquoise);
+    }
+    
+    .feature-icon {
+        width: 70px;
+        height: 70px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1.5rem auto;
+        font-size: 1.5rem;
+        color: white;
+    }
+    
+    .feature-card:nth-child(1) .feature-icon {
+        background: linear-gradient(135deg, rgba(106, 55, 181, 0.9), rgba(132, 81, 209, 0.9));
+        box-shadow: 0 0 15px rgba(106, 55, 181, 0.5);
+    }
+    
+    .feature-card:nth-child(2) .feature-icon {
+        background: linear-gradient(135deg, rgba(46, 205, 200, 0.9), rgba(37, 166, 162, 0.9));
+        box-shadow: 0 0 15px rgba(46, 205, 200, 0.5);
+    }
+    
+    .feature-card:nth-child(3) .feature-icon {
+        background: linear-gradient(135deg, rgba(245, 111, 173, 0.9), rgba(229, 68, 160, 0.9));
+        box-shadow: 0 0 15px rgba(245, 111, 173, 0.5);
+    }
+    
+    .feature-card:nth-child(4) .feature-icon {
+        background: linear-gradient(135deg, rgba(255, 153, 102, 0.9), rgba(255, 119, 51, 0.9));
+        box-shadow: 0 0 15px rgba(255, 153, 102, 0.5);
+    }
+    
+    .feature-title {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: #FFF;
+        margin-bottom: 1rem;
+        text-shadow: 0 0 8px rgba(0, 0, 0, 0.5);
+    }
+    
+    .feature-description {
+        color: #CCC;
+        font-size: 0.95rem;
+        line-height: 1.5;
+    }
+    
+    /* Simüle edilmiş yıldızlar */
+    @keyframes twinkle {
+        0% { opacity: 0.3; }
+        50% { opacity: 1; }
+        100% { opacity: 0.3; }
+    }
+    
+    .stars {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: -1;
+    }
+    
+    .star {
+        position: absolute;
+        width: 2px;
+        height: 2px;
+        background-color: white;
+        border-radius: 50%;
+    }
+    
+    .star-1 { top: 10%; left: 20%; animation: twinkle 3s infinite ease-in-out; }
+    .star-2 { top: 15%; left: 50%; animation: twinkle 4s infinite ease-in-out; }
+    .star-3 { top: 25%; left: 80%; animation: twinkle 5s infinite ease-in-out; }
+    .star-4 { top: 40%; left: 10%; animation: twinkle 4.5s infinite ease-in-out; }
+    .star-5 { top: 60%; left: 30%; animation: twinkle 3.5s infinite ease-in-out; }
+    .star-6 { top: 75%; left: 60%; animation: twinkle 4s infinite ease-in-out; }
+    .star-7 { top: 85%; left: 90%; animation: twinkle 3s infinite ease-in-out; }
+    
+    /* Responsive Tasarım */
+    @media (max-width: 1200px) {
+        .features-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+    
+    @media (max-width: 768px) {
+        .options-container {
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .option-card {
+            width: 100%;
+            max-width: 350px;
+        }
+        
+        .welcome-title {
+            font-size: 2rem;
+        }
+        
+        .features-title {
+            font-size: 1.5rem;
+        }
+        
+        .features-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock styles %}
+
+{% block content %}
+<div class="stars">
+    <div class="star star-1"></div>
+    <div class="star star-2"></div>
+    <div class="star star-3"></div>
+    <div class="star star-4"></div>
+    <div class="star star-5"></div>
+    <div class="star star-6"></div>
+    <div class="star star-7"></div>
+</div>
+
+<div class="welcome-container">
+    <div class="welcome-header">
+        <h1 class="welcome-title">Hoş Geldiniz!</h1>
+        <p class="welcome-subtitle">ReviseMe ile öğrenme yolculuğunuza başlayın. Bilimsel tekrarlama yöntemi, kişiselleştirilmiş takip ve hedef odaklı çalışma ile başarıya ulaşın.</p>
+    </div>
+    
+    <div class="options-container">
+        <div class="option-card">
+            <div class="option-icon">
+                <i class="fas fa-tasks"></i>
+            </div>
+            <div class="option-content">
+                <h2 class="option-title">Tekrar Sistemi</h2>
+                <p class="option-description">Sorularınızı ekleyin, tekrarları takip edin ve öğrenme sürecinizi yönetin.</p>
+                <a href="{{ url_for('index') }}" class="btn-start">Başla</a>
+            </div>
+        </div>
+        
+        <div class="option-card">
+            <div class="option-icon">
+                <i class="fas fa-bullseye"></i>
+                </div>
+            <div class="option-content">
+                <h2 class="option-title">Planlayıcı</h2>
+                <p class="option-description">Kendinize planlar oluşturun ve ilerlemenizi izleyin.</p>
+                <a href="{{ url_for('gorevlerim') }}" class="btn-start">Başla</a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Yeni Eklenen Özellik Kartları Bölümü -->
+    <div class="features-section">
+        <h2 class="features-title">ReviseMe'de Neler Var?
+        </h2>
+        <p class="features-subtitle">Öğrenme deneyiminizi en üst seviyeye çıkaracak, bilimsel tekrarlama metodolojisine dayalı özellikler</p>
+        
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-calendar-alt"></i>
+                </div>
+                <h3 class="feature-title">Kişisel Planlayıcı</h3>
+                <p class="feature-description">Görev yönetimi, kitap takibi ve zamanınızı etkili kullanmanız için kişiselleştirilmiş planlama araçlarıyla çalışmalarınızı düzenleyin.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <h3 class="feature-title">İlerleme Takibi</h3>
+                <p class="feature-description">Günlük, haftalık ve aylık ilerlemenizi görsel grafiklerle takip ederek motivasyonunuzu artırın.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-book"></i>
+                </div>
+                <h3 class="feature-title">Soru Takibi</h3>
+                <p class="feature-description">Sorularınızı kategorilere ve konulara göre organize ederek çalışmalarınızı daha verimli hale getirin.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-bell"></i>
+                </div>
+                <h3 class="feature-title">Hatırlatıcılar</h3>
+                <p class="feature-description">Kişiselleştirilmiş hatırlatıcılarla tekrarlarınızı ve görevlerinizi zamanında tamamlayın.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %} 

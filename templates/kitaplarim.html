@@ -1,0 +1,460 @@
+{% extends "hedefleyici.html" %}
+
+{% block title %}Kitaplarım{% endblock %}
+
+{% block styles %}
+{{ super() }}
+<style>
+    /* Add the new background style here */
+    .kitaplarim-bg {
+        background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%);
+        position: fixed;
+        left: 0; top: 0; width: 100vw; height: 100vh;
+        z-index: -1;
+    }
+    /* Kitaplarım sayfasına özel stiller */
+    h2 {
+        color: #232323;
+        font-size: 2.2rem;
+        font-weight: 800;
+        margin-bottom: 0.8rem;
+        margin-top: 2.5rem;
+        text-shadow: 0 0 15px #fff, 0 0 20px #fff;
+    }
+    
+    .card {
+        background-color: rgba(26, 20, 64, 0.8);
+        border: 1px solid rgba(106, 55, 181, 0.3);
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        transition: all 0.3s ease;
+        color: #FFF;
+        backdrop-filter: blur(5px);
+    }
+    
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 35px rgba(46, 205, 200, 0.3);
+        border-color: var(--accent-turquoise);
+    }
+    
+    .card-title {
+        color: white;
+        text-shadow: 0 0 8px rgba(0, 0, 0, 0.7);
+    }
+    
+    .card-subtitle {
+        color: #CCC !important;
+    }
+    
+    .card-text {
+        color: #EEE;
+    }
+    
+    .text-muted {
+        color: #AAA !important;
+    }
+    
+    .btn-primary {
+        background: linear-gradient(135deg, rgba(106, 55, 181, 0.9), rgba(132, 81, 209, 0.9));
+        border: none;
+        box-shadow: 0 0 15px rgba(106, 55, 181, 0.5);
+    }
+    
+    .btn-primary:hover {
+        background: linear-gradient(135deg, rgba(132, 81, 209, 0.9), rgba(106, 55, 181, 0.9));
+        transform: translateY(-3px);
+    }
+    
+    .btn-outline-primary {
+        color: #FFF;
+        border-color: rgba(106, 55, 181, 0.5);
+    }
+    
+    .btn-outline-primary:hover {
+        background-color: rgba(106, 55, 181, 0.3);
+        color: #FFF;
+        border-color: rgba(106, 55, 181, 0.8);
+    }
+    
+    .btn-outline-success {
+        color: #FFF;
+        border-color: rgba(46, 205, 200, 0.5);
+    }
+    
+    .btn-outline-success:hover {
+        background-color: rgba(46, 205, 200, 0.3);
+        color: #FFF;
+        border-color: rgba(46, 205, 200, 0.8);
+    }
+    
+    .btn-outline-danger {
+        color: #FFF;
+        border-color: rgba(245, 111, 173, 0.5);
+    }
+    
+    .btn-outline-danger:hover {
+        background-color: rgba(245, 111, 173, 0.3);
+        color: #FFF;
+        border-color: rgba(245, 111, 173, 0.8);
+    }
+    
+    .btn-outline-light {
+        color: #FFF;
+        border-color: rgba(255, 255, 255, 0.5);
+    }
+    
+    .btn-outline-light:hover {
+        background-color: rgba(255, 255, 255, 0.2);
+        color: #FFF;
+    }
+    
+    .list-group-item {
+        background-color: rgba(26, 20, 64, 0.5);
+        border: 1px solid rgba(106, 55, 181, 0.2);
+        color: #EEE;
+    }
+    
+    .progress {
+        height: 10px;
+        background-color: rgba(255, 255, 255, 0.1);
+    }
+    
+    .progress-bar {
+        background: linear-gradient(135deg, rgba(46, 205, 200, 0.9), rgba(106, 55, 181, 0.9));
+    }
+    
+    .modal-content {
+        background-color: #fff !important;
+        color: #222 !important;
+        border-radius: 12px;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+    }
+    
+    .modal-header, .modal-footer {
+        background: #f8f9fa !important;
+        color: #222 !important;
+        border-color: #eee !important;
+    }
+    
+    .form-control {
+        background-color: #fff !important;
+        color: #222 !important;
+        border: 1px solid #ccc !important;
+    }
+    
+    .form-control:focus {
+        background-color: #f5f5f5 !important;
+        color: #222 !important;
+        border-color: #30E8E8 !important;
+        box-shadow: 0 0 0 0.15rem rgba(46,205,200,0.15) !important;
+    }
+    
+    .form-label {
+        color: #333 !important;
+    }
+    
+    .modal-backdrop {
+        z-index: 1040 !important;
+        display: none !important;
+    }
+    .modal {
+        z-index: 1050 !important;
+    }
+    .modal-content, .modal-dialog, .modal-body, .modal-header, .modal-footer, .form-control {
+        pointer-events: auto !important;
+    }
+    
+    .modal.show .modal-dialog {
+        position: fixed;
+        top: 50% !important;
+        left: 50% !important;
+        transform: translate(-50%, -50%) !important;
+        margin: 0 !important;
+    }
+</style>
+{% endblock %}
+
+{% block hedefleyici_content %}
+<div class="kitaplarim-bg"></div>
+<input type="hidden" id="csrf_token_global" value="{{ csrf_token() }}">
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-15">
+            <h2 style="color:#232323; text-shadow:0 0 15px #fff, 0 0 20px #fff; font-size: 2.2rem; font-weight: 800; text-align: left; margin-bottom: 0.8rem; margin-top: 2.5rem; letter-spacing: 2px;"><i class="fas fa-book" style="margin-right: 12px;"></i>Kitaplarım</h2>
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h5 class="card-title mb-0 text-start">Kitap Listesi</h5>
+                        <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addBookModal">
+                            <i class="fas fa-plus-circle me-2"></i>Yeni Kitap Ekle
+                        </button>
+                    </div>
+                    {% if books %}
+                    <div class="row gx-5 gy-4">
+                        {% for book in books %}
+                        <div class="col-md-6 col-lg-5">
+                            <div class="card h-100 w-500">
+                                <div class="card-body">
+                                    <h5 class="card-title">{{ book.Title }}</h5>
+                                    <h6 class="card-subtitle mb-2 text-muted">{{ book.Author }}</h6>
+                                    <div class="progress mb-3">
+                                        <div class="progress-bar" role="progressbar" 
+                                             style="width: {{ (book.CurrentPage / book.TotalPages * 100)|round }}%;" 
+                                             aria-valuenow="{{ book.CurrentPage }}" 
+                                             aria-valuemin="0" 
+                                             aria-valuemax="{{ book.TotalPages }}">
+                                            {{ (book.CurrentPage / book.TotalPages * 100)|round }}%
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <small class="text-muted">Sayfa: {{ book.CurrentPage }} / {{ book.TotalPages }}</small>
+                                        <div class="btn-group">
+                                            <button type="button" class="btn btn-sm btn-outline-primary" 
+                                                    data-bs-toggle="modal" 
+                                                    data-bs-target="#updateProgressModal{{ book.BookId }}">
+                                                İlerleme Güncelle
+                                            </button>
+                                            <button type="button" class="btn btn-sm btn-outline-success" 
+                                                    data-bs-toggle="modal" 
+                                                    data-bs-target="#addQuoteModal{{ book.BookId }}">
+                                                Alıntı Ekle
+                                            </button>
+                                            <button type="button" class="btn btn-sm btn-outline-danger delete-book" 
+                                                    data-book-id="{{ book.BookId }}">
+                                                Sil
+                                            </button>
+                                        </div>
+                                    </div>
+                                    {% if book.quotes %}
+                                    <div class="mt-3">
+                                        <h6>Alıntılar:</h6>
+                                        <ul class="list-group">
+                                            {% for quote in book.quotes %}
+                                            <li class="list-group-item">
+                                                <small class="text-muted">Sayfa {{ quote.PageNumber }}:</small>
+                                                <p class="mb-1">{{ quote.Content }}</p>
+                                                <div class="btn-group btn-group-sm">
+                                                    <button type="button" class="btn btn-outline-primary edit-quote" 
+                                                            data-quote-id="{{ quote.QuoteId }}"
+                                                            data-page-number="{{ quote.PageNumber }}"
+                                                            data-content="{{ quote.Content }}">
+                                                        Düzenle
+                                                    </button>
+                                                    <button type="button" class="btn btn-outline-danger delete-quote" 
+                                                            data-quote-id="{{ quote.QuoteId }}">
+                                                        Sil
+                                                    </button>
+                                                </div>
+                                            </li>
+                                            {% endfor %}
+                                        </ul>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        <!-- İlerleme Güncelleme Modal -->
+                        <div class="modal fade" id="updateProgressModal{{ book.BookId }}" tabindex="-1">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">İlerleme Güncelle</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                    </div>
+                                    <form action="{{ url_for('update_book_progress', book_id=book.BookId) }}" method="POST">
+                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                        <div class="modal-body">
+                                            <div class="mb-3">
+                                                <label for="current_page" class="form-label">Mevcut Sayfa</label>
+                                                <input type="number" class="form-control" id="current_page" name="current_page" 
+                                                       min="0" max="{{ book.TotalPages }}" value="{{ book.CurrentPage }}" required>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                                            <button type="submit" class="btn btn-primary">Güncelle</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Alıntı Ekleme Modal -->
+                        <div class="modal fade" id="addQuoteModal{{ book.BookId }}" tabindex="-1">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Alıntı Ekle</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                    </div>
+                                    <form action="{{ url_for('add_quote', book_id=book.BookId) }}" method="POST">
+                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                        <div class="modal-body">
+                                            <div class="mb-3">
+                                                <label for="page_number" class="form-label">Sayfa Numarası</label>
+                                                <input type="number" class="form-control" id="page_number" name="page_number" 
+                                                       min="1" max="{{ book.TotalPages }}" required>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="content" class="form-label">Alıntı</label>
+                                                <textarea class="form-control" id="content" name="content" rows="3" required></textarea>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                                            <button type="submit" class="btn btn-primary">Kaydet</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="alert alert-info">
+                        Henüz kitap bulunmuyor. Yeni bir kitap ekleyin!
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Yeni Kitap Ekleme Modal -->
+    <div class="modal fade" id="addBookModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Yeni Kitap Ekle</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form action="{{ url_for('add_book') }}" method="POST">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="title" class="form-label">Kitap Adı</label>
+                            <input type="text" class="form-control" id="title" name="title" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="author" class="form-label">Yazar</label>
+                            <input type="text" class="form-control" id="author" name="author" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="total_pages" class="form-label">Toplam Sayfa</label>
+                            <input type="number" class="form-control" id="total_pages" name="total_pages" min="1" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                        <button type="submit" class="btn btn-primary">Ekle</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Alıntı Düzenleme Modal -->
+    <div class="modal fade" id="editQuoteModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Alıntı Düzenle</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form id="editQuoteForm" method="POST">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="edit_page_number" class="form-label">Sayfa Numarası</label>
+                            <input type="number" class="form-control" id="edit_page_number" name="page_number" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="edit_content" class="form-label">Alıntı</label>
+                            <textarea class="form-control" id="edit_content" name="content" rows="3" required></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                        <button type="submit" class="btn btn-primary">Güncelle</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script>
+// CSRF token'ı global input'tan al
+const csrf_token = document.getElementById('csrf_token_global').value;
+
+document.body.addEventListener('click', function(e) {
+    console.log("Tıklama algılandı!", e.target);
+    // Kitap silme
+    if (e.target.classList.contains('delete-book')) {
+            if (confirm('Bu kitabı silmek istediğinizden emin misiniz?')) {
+            const bookId = e.target.dataset.bookId;
+                fetch(`/delete-book/${bookId}`, {
+                    method: 'POST',
+                    headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrf_token
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        location.reload();
+                    } else {
+                        alert('Kitap silinirken bir hata oluştu.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Bir hata oluştu.');
+                });
+            }
+    }
+    // Alıntı silme
+    if (e.target.classList.contains('delete-quote')) {
+            if (confirm('Bu alıntıyı silmek istediğinizden emin misiniz?')) {
+            const quoteId = e.target.dataset.quoteId;
+                fetch(`/delete-quote/${quoteId}`, {
+                    method: 'POST',
+                    headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrf_token
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        location.reload();
+                    } else {
+                        alert('Alıntı silinirken bir hata oluştu.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Bir hata oluştu.');
+                });
+            }
+    }
+    // Alıntı düzenleme (modal açma)
+    if (e.target.classList.contains('edit-quote')) {
+        const quoteId = e.target.dataset.quoteId;
+        const pageNumber = e.target.dataset.pageNumber;
+        const content = e.target.dataset.content;
+    const editQuoteModal = document.getElementById('editQuoteModal');
+    const editQuoteForm = document.getElementById('editQuoteForm');
+            editQuoteForm.action = `/edit-quote/${quoteId}`;
+            document.getElementById('edit_page_number').value = pageNumber;
+            document.getElementById('edit_content').value = content;
+            new bootstrap.Modal(editQuoteModal).show();
+    }
+});
+</script>
+{% endblock %} 

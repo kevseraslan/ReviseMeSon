@@ -1,0 +1,425 @@
+{% extends "base.html" %}
+
+{% block title %}Görev Zamanlayıcı - {{ task.Title }}{% endblock title %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-lg-8 offset-lg-2">
+            <div class="card shadow-lg border-0 rounded-lg">
+                <div class="card-header bg-primary text-white">
+                    <h2 class="card-title mb-0"><i class="fas fa-tasks me-2"></i>Görev Zamanlayıcı</h2>
+                </div>
+                <div class="card-body">
+                    <div class="task-info mb-4">
+                        <h3 class="text-center fw-bold">{{ task.Title }}</h3>
+                        <div class="task-details p-3 bg-light rounded mt-3">
+                            <p class="mb-2"><i class="fas fa-info-circle me-2"></i><strong>Açıklama:</strong> {{ task.Description }}</p>
+                            <p class="mb-2"><i class="fas fa-tag me-2"></i><strong>Kategori:</strong> {{ task.Category }}</p>
+                            <p class="mb-0"><i class="fas fa-calendar-alt me-2"></i><strong>Oluşturulma:</strong> {{ task.CreatedAt.strftime('%d.%m.%Y') }}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="timer-container text-center p-4 mb-4 bg-light rounded">
+                        <div class="timer-display mb-3">
+                            <div class="progress mb-3" style="height: 10px;">
+                                <div id="timerProgress" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%"></div>
+                            </div>
+                            <h1 class="display-1 fw-bold" id="timer">00:00:00</h1>
+                        </div>
+                        
+                        <div class="pomodoro-info mb-3">
+                            <span class="badge bg-info text-dark" id="sessionType">Çalışma</span>
+                            <span class="badge bg-secondary" id="sessionCount">Oturum: 1/4</span>
+                        </div>
+                        
+                        <div class="timer-controls">
+                            <button id="startTimer" class="btn btn-success btn-lg me-2">
+                                <i class="fas fa-play"></i> Başlat
+                            </button>
+                            <button id="pauseTimer" class="btn btn-warning btn-lg me-2" disabled>
+                                <i class="fas fa-pause"></i> Duraklat
+                            </button>
+                            <button id="stopTimer" class="btn btn-danger btn-lg" disabled>
+                                <i class="fas fa-stop"></i> Durdur
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="task-stats p-3 mb-4 border rounded">
+                        <h5 class="mb-3"><i class="fas fa-chart-line me-2"></i>İstatistikler</h5>
+                        <div class="row text-center">
+                            <div class="col-4">
+                                <div class="stat-item">
+                                    <h6>Bugün</h6>
+                                    <p class="h4" id="todayTime">0 dk</p>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="stat-item">
+                                    <h6>Bu Hafta</h6>
+                                    <p class="h4" id="weekTime">0 dk</p>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="stat-item">
+                                    <h6>Toplam</h6>
+                                    <p class="h4" id="totalTime">0 dk</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="notes-section mb-3">
+                        <h5><i class="fas fa-sticky-note me-2"></i>Notlar</h5>
+                        <div class="form-floating mb-3">
+                            <textarea class="form-control" id="taskNotes" style="height: 100px"></textarea>
+                            <label for="taskNotes">Görev hakkında notlar...</label>
+                        </div>
+                        <button id="saveNotes" class="btn btn-outline-primary btn-sm">
+                            <i class="fas fa-save me-1"></i> Notları Kaydet
+                        </button>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between mt-4">
+                        <a href="{{ url_for('tasks') }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-1"></i> Görevlere Dön
+                        </a>
+                        <button id="completeTask" class="btn btn-outline-success">
+                            <i class="fas fa-check me-1"></i> Görevi Tamamla
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bildirim Modalı -->
+<div class="modal fade" id="breakModal" tabindex="-1" aria-labelledby="breakModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-info text-white">
+                <h5 class="modal-title" id="breakModalLabel">Mola Zamanı!</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+                <i class="fas fa-coffee fa-4x mb-3 text-info"></i>
+                <h4>Tebrikler! Çalışma oturumunu tamamladınız.</h4>
+                <p>Şimdi <span id="breakDuration">5</span> dakikalık bir mola verin.</p>
+                <div class="progress mt-3 mb-3">
+                    <div id="breakProgress" class="progress-bar bg-info progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%"></div>
+                </div>
+                <h3 id="breakTimer">00:00</h3>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Molayı Geç</button>
+                <button type="button" class="btn btn-primary" id="startBreak">Molayı Başlat</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Temel zamanlayıcı elemanları
+    const startButton = document.getElementById('startTimer');
+    const pauseButton = document.getElementById('pauseTimer');
+    const stopButton = document.getElementById('stopTimer');
+    const timerDisplay = document.getElementById('timer');
+    const timerProgress = document.getElementById('timerProgress');
+    const sessionType = document.getElementById('sessionType');
+    const sessionCount = document.getElementById('sessionCount');
+    const completeTaskBtn = document.getElementById('completeTask');
+    const saveNotesBtn = document.getElementById('saveNotes');
+    
+    // Mola modalı elemanları
+    const breakModal = new bootstrap.Modal(document.getElementById('breakModal'));
+    const breakTimer = document.getElementById('breakTimer');
+    const breakProgress = document.getElementById('breakProgress');
+    const startBreakBtn = document.getElementById('startBreak');
+    
+    // Zamanlayıcı değişkenleri
+    let timerInterval;
+    let breakInterval;
+    let seconds = 0;
+    let timeId = null;
+    let isPaused = false;
+    let isBreak = false;
+    let sessionNum = 1;
+    
+    // Pomodoro ayarları
+    const workDuration = 25 * 60; // 25 dakika
+    const shortBreakDuration = 5 * 60; // 5 dakika
+    const longBreakDuration = 15 * 60; // 15 dakika
+    const sessionsBeforeLongBreak = 4;
+    
+    // İstatistik değerleri (gerçek verilerle değiştirilmeli)
+    document.getElementById('todayTime').textContent = '{{ today_time|default("0") }} dk';
+    document.getElementById('weekTime').textContent = '{{ week_time|default("0") }} dk';
+    document.getElementById('totalTime').textContent = '{{ total_time|default("0") }} dk';
+    
+    // Zamanlayıcıyı başlat
+    startButton.addEventListener('click', function() {
+        fetch(`/start-timer/{{ task.TaskId }}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token() }}'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                timeId = data.time_id;
+                startButton.disabled = true;
+                pauseButton.disabled = false;
+                stopButton.disabled = false;
+                
+                // Zamanlayıcıyı başlat
+                startWorkSession();
+            } else {
+                showNotification('error', 'Zamanlayıcı başlatılırken bir hata oluştu: ' + data.error);
+            }
+        });
+    });
+    
+    // Zamanlayıcıyı duraklat
+    pauseButton.addEventListener('click', function() {
+        if (isPaused) {
+            // Devam et
+            isPaused = false;
+            pauseButton.innerHTML = '<i class="fas fa-pause"></i> Duraklat';
+            startTimer();
+        } else {
+            // Duraklat
+            isPaused = true;
+            pauseButton.innerHTML = '<i class="fas fa-play"></i> Devam Et';
+            clearInterval(timerInterval);
+        }
+    });
+
+    // Zamanlayıcıyı durdur
+    stopButton.addEventListener('click', function() {
+        if (!timeId) return;
+        
+        if (confirm('Zamanlayıcıyı durdurmak istediğinize emin misiniz?')) {
+            fetch(`/stop-timer/${timeId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token() }}'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    resetTimer();
+                    showNotification('success', `Görev için ${data.duration} dakika çalıştınız!`);
+                    
+                    // İstatistikleri güncelle
+                    updateStats(data.duration);
+                } else {
+                    showNotification('error', 'Zamanlayıcı durdurulurken bir hata oluştu: ' + data.error);
+                }
+            });
+        }
+    });
+    
+    // Görevi tamamla
+    completeTaskBtn.addEventListener('click', function() {
+        if (confirm('Bu görevi tamamlandı olarak işaretlemek istediğinize emin misiniz?')) {
+            fetch(`/complete-task/{{ task.TaskId }}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token() }}'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showNotification('success', 'Görev başarıyla tamamlandı!');
+                    setTimeout(() => {
+                        window.location.href = "{{ url_for('tasks') }}";
+                    }, 1500);
+                } else {
+                    showNotification('error', 'Görev tamamlanırken bir hata oluştu: ' + data.error);
+                }
+            });
+        }
+    });
+    
+    // Notları kaydet
+    saveNotesBtn.addEventListener('click', function() {
+        const notes = document.getElementById('taskNotes').value;
+        fetch(`/save-task-notes/{{ task.TaskId }}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token() }}'
+            },
+            body: JSON.stringify({ notes: notes })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showNotification('success', 'Notlar başarıyla kaydedildi!');
+            } else {
+                showNotification('error', 'Notlar kaydedilirken bir hata oluştu: ' + data.error);
+            }
+        });
+    });
+    
+    // Molayı başlat
+    startBreakBtn.addEventListener('click', function() {
+        startBreakBtn.disabled = true;
+        startBreakTimer();
+    });
+    
+    // Çalışma oturumunu başlat
+    function startWorkSession() {
+        isBreak = false;
+        seconds = 0;
+        sessionType.textContent = 'Çalışma';
+        sessionType.className = 'badge bg-info text-dark';
+        sessionCount.textContent = `Oturum: ${sessionNum}/${sessionsBeforeLongBreak}`;
+        startTimer();
+    }
+    
+    // Mola oturumunu başlat
+    function startBreakSession() {
+        isBreak = true;
+        seconds = 0;
+        
+        const isLongBreak = sessionNum % sessionsBeforeLongBreak === 0;
+        const breakDuration = isLongBreak ? longBreakDuration : shortBreakDuration;
+        document.getElementById('breakDuration').textContent = isLongBreak ? '15' : '5';
+        
+        sessionType.textContent = isLongBreak ? 'Uzun Mola' : 'Kısa Mola';
+        sessionType.className = 'badge bg-success';
+        
+        breakModal.show();
+    }
+    
+    // Mola zamanlayıcısını başlat
+    function startBreakTimer() {
+        const isLongBreak = sessionNum % sessionsBeforeLongBreak === 0;
+        const breakDuration = isLongBreak ? longBreakDuration : shortBreakDuration;
+        let breakSeconds = 0;
+        
+        breakInterval = setInterval(() => {
+            breakSeconds++;
+            const minutes = Math.floor(breakSeconds / 60);
+            const secs = breakSeconds % 60;
+            breakTimer.textContent = `${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+            
+            // İlerleme çubuğunu güncelle
+            const progress = (breakSeconds / breakDuration) * 100;
+            breakProgress.style.width = `${progress}%`;
+            
+            if (breakSeconds >= breakDuration) {
+                clearInterval(breakInterval);
+                breakModal.hide();
+                
+                // Sonraki oturuma geç
+                if (sessionNum < sessionsBeforeLongBreak) {
+                    sessionNum++;
+                } else {
+                    sessionNum = 1;
+                }
+                
+                startWorkSession();
+            }
+        }, 1000);
+    }
+    
+    // Ana zamanlayıcıyı başlat
+    function startTimer() {
+        timerInterval = setInterval(() => {
+            seconds++;
+            updateTimerDisplay();
+            
+            // İlerleme çubuğunu güncelle
+            const progress = (seconds / workDuration) * 100;
+            timerProgress.style.width = `${progress}%`;
+            
+            // Çalışma süresi tamamlandıysa
+            if (seconds >= workDuration && !isBreak) {
+                clearInterval(timerInterval);
+                startBreakSession();
+            }
+        }, 1000);
+    }
+    
+    // Zamanlayıcıyı sıfırla
+    function resetTimer() {
+        clearInterval(timerInterval);
+        clearInterval(breakInterval);
+        seconds = 0;
+        timeId = null;
+        isPaused = false;
+        isBreak = false;
+        sessionNum = 1;
+        
+        updateTimerDisplay();
+        timerProgress.style.width = '0%';
+        sessionType.textContent = 'Çalışma';
+        sessionType.className = 'badge bg-info text-dark';
+        sessionCount.textContent = `Oturum: 1/${sessionsBeforeLongBreak}`;
+        
+        startButton.disabled = false;
+        pauseButton.disabled = true;
+        stopButton.disabled = true;
+        pauseButton.innerHTML = '<i class="fas fa-pause"></i> Duraklat';
+    }
+    
+    // Zamanlayıcı görüntüsünü güncelle
+    function updateTimerDisplay() {
+        const hours = Math.floor(seconds / 3600);
+        const minutes = Math.floor((seconds % 3600) / 60);
+        const secs = seconds % 60;
+        timerDisplay.textContent = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    }
+    
+    // İstatistikleri güncelle
+    function updateStats(duration) {
+        // Bu fonksiyon gerçek verilerle değiştirilmeli
+        const todayTime = parseInt(document.getElementById('todayTime').textContent) + parseInt(duration);
+        const weekTime = parseInt(document.getElementById('weekTime').textContent) + parseInt(duration);
+        const totalTime = parseInt(document.getElementById('totalTime').textContent) + parseInt(duration);
+        
+        document.getElementById('todayTime').textContent = `${todayTime} dk`;
+        document.getElementById('weekTime').textContent = `${weekTime} dk`;
+        document.getElementById('totalTime').textContent = `${totalTime} dk`;
+    }
+    
+    // Bildirim göster
+    function showNotification(type, message) {
+        const alertDiv = document.createElement('div');
+        alertDiv.className = `alert alert-${type} alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3`;
+        alertDiv.style.zIndex = '9999';
+        alertDiv.innerHTML = `
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        `;
+        document.body.appendChild(alertDiv);
+        
+        setTimeout(() => {
+            alertDiv.remove();
+        }, 3000);
+    }
+    
+    // Sayfa yüklendiğinde notları yükle
+    fetch(`/get-task-notes/{{ task.TaskId }}`)
+    .then(response => response.json())
+    .then(data => {
+        if (data.success && data.notes) {
+            document.getElementById('taskNotes').value = data.notes;
+        }
+    });
+});
+</script>
+{% endblock content %}

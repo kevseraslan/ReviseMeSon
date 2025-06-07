@@ -1,0 +1,494 @@
+{% extends "base.html" %}
+
+{% block title %}Ana Sayfa - ReviseMe{% endblock %}
+
+{% block styles %}
+<style>
+    :root {
+        --primary-color: #6a37b5; /* More vibrant purple */
+        --secondary-color: #9c66da; /* Lighter purple */
+        --accent-color: #ff70a6; /* Pink accent */
+        --accent-turquoise: #2ecdc8; /* Turkuaz renk tanımlandı */
+        --text-color: #333;
+        --card-background: rgba(255, 255, 255, 0.8); /* Semi-transparent white */
+        --card-border: rgba(106, 55, 181, 0.3);
+        --input-background: rgba(255, 255, 255, 0.9);
+        --input-border: #ccc;
+        --button-primary-background: var(--primary-color);
+        --button-primary-text: #fff;
+        --button-secondary-background: var(--secondary-color);
+        --button-secondary-text: #fff;
+        --danger-color: #e74c3c;
+        --success-color: #2ecc71;
+        --warning-color: #f39c12;
+        --info-color: #3498db;
+    }
+    
+    body {
+        font-family: 'Nunito', sans-serif;
+        background: #f0f0f0; /* Sayfa arka planını gri yap */
+        color: var(--text-color);
+        line-height: 1.6;
+        position: relative; /* Gerekirse ekleyin */
+    }
+    
+    /* Yıldız animasyonu */
+    @keyframes twinkle {
+        0% { opacity: 0.3; }
+        50% { opacity: 1; }
+        100% { opacity: 0.3; }
+    }
+    
+    .stars {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: -1;
+    }
+    
+    .star {
+        position: absolute;
+        width: 2px;
+        height: 2px;
+        background-color: white;
+        border-radius: 50%;
+    }
+    
+    .star-1 { top: 10%; left: 20%; animation: twinkle 3s infinite ease-in-out; }
+    .star-2 { top: 15%; left: 50%; animation: twinkle 4s infinite ease-in-out; }
+    .star-3 { top: 25%; left: 80%; animation: twinkle 5s infinite ease-in-out; }
+    .star-4 { top: 40%; left: 10%; animation: twinkle 4.5s infinite ease-in-out; }
+    .star-5 { top: 60%; left: 30%; animation: twinkle 3.5s infinite ease-in-out; }
+    .star-6 { top: 75%; left: 60%; animation: twinkle 4s infinite ease-in-out; }
+    .star-7 { top: 85%; left: 90%; animation: twinkle 3s infinite ease-in-out; }
+    
+    /* Header Dalga Arka Planı */
+    .header-wave {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        overflow: hidden;
+        line-height: 0;
+        z-index: -1;
+    }
+    
+    .header-wave svg {
+        position: relative;
+        display: block;
+        width: calc(100% + 1.3px);
+        height: 100px;
+    }
+    
+    .header-wave .shape-fill {
+        fill: var(--secondary-color);
+    }
+
+    /* Ana İçerik Kartları */
+    .motivation-author {
+        font-weight: 600;
+        font-size: 1.5rem;
+        text-align: left;
+        color: #0f0505;
+    }
+
+    .motivation-content {
+        position: relative;
+        /* z-index: 1; */
+        text-align: left;
+    }
+
+    /* Kategori Daireleri */
+    .categories-container {
+        padding: 1rem 0;
+    }
+
+    .category-item {
+        margin-bottom: 1rem;
+        transition: all 0.3s ease;
+    }
+
+    .category-item:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .category-link {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-decoration: none;
+        color: inherit;
+        background-color: rgba(26, 20, 64, 0.9); /* Orijinal koyu mor arka plan */
+        border-radius: 50%;
+        padding: 2.5rem;
+        width: 250px;
+        height: 250px;
+        justify-content: center;
+        text-align: center;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+        border: 3px solid transparent;
+        overflow: hidden;
+    }
+
+    .category-item:hover .category-link {
+         background-color: rgba(46, 205, 200, 0.2); /* Orijinal hover arka planı (Turkuaz) */
+         border-color: transparent;
+    }
+
+    .category-content {
+        position: relative;
+        z-index: 2;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+    }
+
+    .category-icon {
+        font-size: 4rem; /* İkon boyutunu artır */
+        color: white; /* İkon rengini beyaz yap */
+        margin-bottom: 0.8rem; /* Boşluğu artır */
+    }
+
+    .category-name {
+        font-weight: 600;
+        color: white; /* Beyaz yazı */
+        font-size: 1.3rem; /* Yazı boyutunu artır */
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.7); /* Gölgeyi koyulaştırıyorum */
+    }
+
+    .category-count {
+        font-size: 1.1rem; /* Boyutu artırıyorum */
+        color: #fff; /* Yazı rengini beyaza çeviriyorum */
+    }
+
+    /* SVG Halka Stilleri */
+    .progress-ring {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        transform: rotate(-90deg);
+        z-index: 1;
+    }
+
+    .progress-ring-circle-bg {
+        stroke: rgba(46, 205, 200, 0.3);
+        stroke-width: 8;
+        fill: transparent;
+    }
+
+    .progress-ring-circle {
+        stroke: white; /* Halka rengini beyaz yap */
+        stroke-width: 8;
+        fill: transparent;
+        transition: stroke-dashoffset 0.5s ease-in-out;
+        stroke-linecap: round;
+    }
+
+    /* Dashboard Kartları */
+    .dashboard-card {
+        background-color: rgba(26, 20, 64, 0.8);
+        border: 1px solid rgba(106, 55, 181, 0.3);
+        border-radius: 0;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        padding: 1rem;
+        margin-bottom: 1.5rem;
+        transition: all 0.3s ease;
+        color: #fff; /* Kart içindeki yazı rengi */
+    }
+
+    .dashboard-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 35px rgba(0, 0, 0, 0.3);
+    }
+
+    .dashboard-card .card-title {
+        color: #fff;
+        font-weight: 600;
+    }
+
+    .dashboard-card .card-text {
+        color: #ccc;
+    }
+
+    .dashboard-card .list-group-item {
+        background-color: rgba(255, 255, 255, 0.1); /* Liste öğesi arka planı */
+        border-color: rgba(255, 255, 255, 0.2); /* Liste öğesi border */
+        color: #eee;
+    }
+
+    .dashboard-card .list-group-item i {
+        color: var(--accent-color); /* Liste öğesi ikon rengi */
+    }
+
+    .dashboard-card .badge {
+        background-color: var(--accent-color);
+        color: #fff;
+    }
+
+    .dashboard-card a.btn-primary, .dashboard-card a.btn-warning {
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
+        color: #fff;
+        font-weight: 600;
+    }
+
+    .dashboard-card a.btn-primary:hover, .dashboard-card a.btn-warning:hover {
+        background-color: var(--secondary-color);
+        border-color: var(--secondary-color);
+    }
+
+    .dashboard-card .text-muted {
+        color: #bbb !important;
+    }
+
+    .dashboard-card .text-success {
+        color: var(--success-color) !important;
+    }
+
+    .dashboard-card .text-warning {
+        color: var(--warning-color) !important;
+    }
+    
+    /* Son Aktiviteler Kartı Stilleri */
+    .dashboard-card .card-title.activity-title {
+        color: var(--accent-turquoise);
+    }
+
+    .dashboard-card .list-group-item .activity-icon-circle {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-right: 1rem;
+        font-size: 1.2rem;
+        color: white;
+    }
+    
+    .activity-icon-circle.blue {
+        background-color: #3498db;
+    }
+
+    .activity-icon-circle.green {
+        background-color: #2ecc71;
+    }
+
+    .activity-icon-circle.teal {
+         background-color: var(--accent-turquoise);
+    }
+
+     .activity-icon-circle.yellow {
+         background-color: #f1c40f;
+     }
+
+    /* Genel stil düzeltmeleri */
+    .container {
+        padding-top: 20px;
+        padding-bottom: 20px;
+    }
+    
+    .btn-outline-primary {
+        color: var(--primary-color);
+        border-color: var(--primary-color);
+    }
+    
+    .btn-outline-primary:hover {
+        background-color: var(--primary-color);
+        color: #fff;
+    }
+    
+    .text-primary {
+        color: var(--primary-color) !important;
+    }
+    
+    .text-warning {
+        color: var(--warning-color) !important;
+    }
+
+    @media (max-width: 768px) {
+        .category-link {
+            width: 200px;
+            height: 200px;
+            padding: 2rem;
+        }
+        .category-icon {
+            font-size: 3rem;
+        }
+        .category-name {
+            font-size: 1.1rem;
+        }
+        .category-count {
+            font-size: 0.9rem;
+        }
+    }
+
+    h1.page-header {
+        font-family: 'Poppins', 'Nunito', sans-serif;
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: #000;
+        text-shadow: 0 2px 12px #fff, 0 1px 0 #fff;
+        margin-bottom: 2rem;
+        text-align: left;
+    }
+
+    /* Video Bölümü */
+    .video-full-width-section {
+        position: relative;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 350px;
+        overflow: hidden;
+        margin: 0;
+        padding: 0;
+        background: #f0f0f0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    
+    .video-full-width-section video {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+</style>
+{% endblock styles %}
+
+{% block page_content %}
+<div class="stars">
+    <div class="star star-1"></div>
+    <div class="star star-2"></div>
+    <div class="star star-3"></div>
+    <div class="star star-4"></div>
+    <div class="star star-5"></div>
+    <div class="star star-6"></div>
+    <div class="star star-7"></div>
+</div>
+
+<div class="video-full-width-section">
+    <video autoplay muted loop>
+        <source src="{{ url_for('static', filename='images/WhatsApp Video 2025-06-04 saat 21.53.18_50dbedba.mp4') }}" type="video/mp4">
+        Tarayıcınız video etiketini desteklemiyor.
+    </video>
+</div>
+
+<div class="container">
+    <h1 class="page-header" style="text-align: left;">Hoş Geldin, {{ current_user.Name }}!</h1>
+    <p class="motivation-author">{{ motivation_message }}</p>
+
+    <div class="row categories-container justify-content-center">
+        {% for category in categories %}
+        <div class="col-12 col-md-6 col-lg-4 d-flex justify-content-center align-items-stretch category-item mb-4">
+            <a href="{{ url_for('category_questions', category_id=category.CategoryId) }}" class="category-link mx-auto">
+                <svg class="progress-ring" width="250" height="250">
+                    <circle
+                        class="progress-ring-circle-bg"
+                        stroke-width="8"
+                        fill="transparent"
+                        r="110"
+                        cx="125"
+                        cy="125"
+                    />
+                    <circle
+                        class="progress-ring-circle"
+                        stroke-width="8"
+                        fill="transparent"
+                        r="110"
+                        cx="125"
+                        cy="125"
+                        stroke-linecap="round"
+                       
+                    />
+                </svg>
+                <div class="category-content">
+                    <div class="category-icon">
+                        {% if category.Name == 'Matematik' %}
+                        <i class="fas fa-calculator"></i>
+                        {% elif category.Name == 'Fizik' %}
+                        <i class="fas fa-atom"></i>
+                        {% elif category.Name == 'Kimya' %}
+                        <i class="fas fa-flask"></i>
+                        {% elif category.Name == 'Biyoloji' %}
+                        <i class="fas fa-dna"></i>
+                        {% elif category.Name == 'Türk Dili ve Edebiyatı' %}
+                        <i class="fas fa-book"></i>
+                        {% elif category.Name == 'Tarih' %}
+                        <i class="fas fa-landmark"></i>
+                        {% elif category.Name == 'Coğrafya' %}
+                        <i class="fas fa-globe-europe"></i>
+                        {% elif category.Name == 'Din' %}
+                        <i class="fas fa-pray"></i>
+                        {% elif category.Name == 'Felsefe' %}
+                        <i class="fas fa-brain"></i>
+                        {% elif category.Name == 'Yabancı Dil' %}
+                        <i class="fas fa-language"></i>
+                        {% else %}
+                        <i class="fas fa-book"></i>
+                        {% endif %}
+                    </div>
+                    <div class="category-name">{{ category.Name }}</div>
+                    <div class="category-count">{{ category.question_count }} Soru</div>
+                </div>
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+
+    {# Son Aktiviteler Kartı - Tekrar Eklendi #}
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="dashboard-card">
+                <h5 class="card-title" style="color: #fff;">Son Aktiviteler</h5>
+                <ul class="list-group list-group-flush">
+                    {# Bu kısım app.py'den gelen verilerle doldurulacak #}
+                    {% if notifications %}
+                        {% for notification in notifications %}
+                        <li class="list-group-item d-flex align-items-center">
+                            <div class="icon-circle {{ notification.color_class }}">
+                                <i class="{{ notification.icon }}"></i>
+                            </div>
+                            <div class="ms-3">
+                                <div class="fw-bold" style="color: #eee;">{{ notification.type }}</div>
+                                <small class="text-muted">{{ notification.msg }}</small>
+                                {% if notification.timestamp %}
+                                <div class="text-muted" style="font-size:0.85em;">
+                                    {{ notification.timestamp.strftime('%d.%m.%Y %H:%M') if notification.timestamp else '' }}
+                                </div>
+                                {% endif %}
+                            </div>
+                        </li>
+                        {% endfor %}
+                    {% else %}
+                        <li class="list-group-item">Henüz görüntülenecek bir aktivite yok.</li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+{% endblock page_content %}
+
+{% block scripts %}
+{{ super() }}
+<script>
+    // JavaScript for any dynamic elements on the index page
+    // This block is now minimal as time update script is in base.html
+</script>
+{% endblock scripts %}
+
+

@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+
+{% block title %}Favorilerim - ReviseMe{% endblock %}
+
+{% block page_content %}
+<div class="favorites-bg" style="min-height: 100vh; width: 100vw; position: absolute; left: 0; top: 0; z-index: -1; background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%);"></div>
+<div class="inner-content-wrapper">
+    <div class="favorite-header mb-4"><i class="fas fa-star" style="margin-right: 12px;"></i>Favori Sorularım</div>
+    <!-- Kategori Filtreleme -->
+    <div class="mb-4">
+        <label for="categoryFilter" class="form-label" style="color: #232946; font-weight: 600;">Ders/Kategori Seçin:</label>
+        <select id="categoryFilter" class="form-select dark-input" onchange="filterFavorites()" style="max-width: 300px;">
+            <option value="">Tüm Kategoriler</option>
+            {% for category in categories %}
+            <option value="{{ category.CategoryId }}" {% if selected_category_id and selected_category_id|int == category.CategoryId %}selected{% endif %}>{{ category.Name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        {% for question in questions %}
+        <div class="col">
+            <div class="card h-100 dark-card shadow-lg p-2" style="border-radius: 1.25rem; background: #232946; color: #f8f9fc;">
+                {% if question.ImagePath or question.PhotoPath %}
+                <img src="{{ url_for('static', filename=question.ImagePath or question.PhotoPath) }}" class="card-img-top" alt="Soru Görseli" style="height: 140px; object-fit: cover; border-radius: 1rem 1rem 0 0;">
+                {% endif %}
+                <div class="card-body">
+                    <h5 class="card-title" style="color: #30e8e8;">{{ question.Content[:100] }}{% if question.Content|length > 100 %}...{% endif %}</h5>
+                </div>
+                <div class="card-footer bg-transparent border-0 text-center">
+                    <a href="{{ url_for('view_question', question_id=question.QuestionId) }}" class="btn btn-primary w-100" style="background: linear-gradient(135deg, #30e8e8, #8ec5fc); border: none; font-weight: bold; box-shadow: 0 2px 8px #b2fefa;"> <i class="fas fa-eye"></i> Görüntüle</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+        {% if questions|length == 0 %}
+        <div class="alert alert-info mt-3">Favori soru bulunmuyor.</div>
+        {% endif %}
+    </div>
+</div>
+<style>
+.favorites-bg {
+    background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%);
+    position: fixed;
+    left: 0; top: 0; width: 100vw; height: 100vh;
+    z-index: -1;
+}
+.favorite-header {
+    background: none;
+    color: #232323;
+    font-family: 'Nunito', sans-serif;
+    font-size: 2.2rem;
+    font-weight: 800;
+    text-align: left;
+    margin-bottom: 0.8rem;
+    margin-top: 2.5rem;
+    letter-spacing: 2px;
+    text-shadow: 0 0 15px #fff, 0 0 20px #fff;
+}
+.dark-card label.form-label {
+    color: #f8f9fc;
+    font-weight: 600;
+}
+.dark-card input.form-control,
+.dark-card select.form-select,
+.dark-card textarea.form-control {
+    border-radius: 0.75rem;
+    border: 1px solid #8ec5fc;
+    background: #232946;
+    color: #f8f9fc;
+}
+.dark-card input.form-control:focus,
+.dark-card select.form-select:focus,
+.dark-card textarea.form-control:focus {
+    border-color: #30e8e8;
+    box-shadow: 0 0 0 0.2rem #8ec5fc44;
+    background: #232946;
+    color: #f8f9fc;
+}
+.dark-card ::placeholder {
+    color: #b2b8d6;
+    opacity: 1;
+}
+</style>
+
+{% block scripts %}
+<script>
+    function filterFavorites() {
+        var categoryId = document.getElementById("categoryFilter").value;
+        var url = "{{ url_for('favorites') }}";
+        if (categoryId) {
+            url += "?category=" + categoryId;
+        }
+        window.location.href = url;
+    }
+
+    // Sayfa yüklendiğinde mevcut seçimi ayarla (isteğe bağlı, Flask tarafında yapılıyor)
+    // window.onload = function() {
+    //     const urlParams = new URLSearchParams(window.location.search);
+    //     const category = urlParams.get('category');
+    //     if (category) {
+    //         document.getElementById('categoryFilter').value = category;
+    //     }
+    // }
+</script>
+{% endblock %}
+{% endblock %} 

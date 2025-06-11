@@ -26,7 +26,7 @@ app.config['SECRET_KEY'] = 'bu-sabit-bir-test-anahtaridir' # TEST AMAÇLI SABİT
 
 # MSSQL bağlantı parametreleri
 driver = "ODBC Driver 17 for SQL Server"
-server = "E\\SQLEXPRESS"
+server = "MSI\\SQLK"
 database = "ReviseMe"
 
 connection_string = f"DRIVER={{{driver}}};SERVER={server};DATABASE={database};Trusted_Connection=yes;TrustServerCertificate=yes;MARS_Connection=yes;"
@@ -34,7 +34,7 @@ params = urllib.parse.quote_plus(connection_string)
 
 # SQLAlchemy ayarları
 app.config['SQLALCHEMY_DATABASE_URI'] = (
-    'mssql+pyodbc://@E\\SQLEXPRESS/ReviseMe?'
+    'mssql+pyodbc://@MSI\\SQLK/ReviseMe?'
     'driver=ODBC+Driver+17+for+SQL+Server&trusted_connection=yes'
 )
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -312,23 +312,27 @@ def notifications():
             and_(Question.Repeat3Date != None, db.func.cast(Question.Repeat3Date, db.Date) == today)
         )
     ).all()
+
+    # Geçmiş soruları past_questions route'u ile aynı mantıkta çek
     past_questions = Question.query.filter(
         Question.UserId == current_user.UserId,
         Question.IsCompleted == False,
-        Question.IsHidden == False,
-        or_(
-            and_(Question.Repeat1Date != None, db.func.cast(Question.Repeat1Date, db.Date) < today),
-            and_(Question.Repeat2Date != None, db.func.cast(Question.Repeat2Date, db.Date) < today),
-            and_(Question.Repeat3Date != None, db.func.cast(Question.Repeat3Date, db.Date) < today)
+        Question.RepeatCount < 3,
+        (
+            (Question.RepeatCount == 0) & (db.func.cast(Question.Repeat1Date, db.Date) < today)
+            |
+            (Question.RepeatCount == 1) & (db.func.cast(Question.Repeat2Date, db.Date) < today)
+            |
+            (Question.RepeatCount == 2) & (db.func.cast(Question.Repeat3Date, db.Date) < today)
         )
-    ).all()
+    ).order_by(Question.Repeat1Date.desc()).all()
 
     # Görev Bildirimleri için verileri çek
     # Vade tarihi geçmiş ve tamamlanmamış görevler
     overdue_tasks = Task.query.filter(
         Task.UserId == current_user.UserId,
         Task.DueDate < now,
-        Task.Status != 'completed' # Use Status instead of IsCompleted
+        Task.Status != 'completed'
     ).all()
 
     # Bugüne ait görevler (vade tarihi bugün olan ve tamamlanmamış)
@@ -336,26 +340,20 @@ def notifications():
         Task.UserId == current_user.UserId,
         Task.DueDate >= today,
         Task.DueDate < today + timedelta(days=1),
-        Task.Status != 'completed' # Use Status instead of IsCompleted
+        Task.Status != 'completed'
     ).all()
 
-
-    # Kitap Bildirimleri için verileri çek (Örnek: okunacak veya incelenecek kitaplar)
-    # Şu an için Kitap modelinde tarih bazlı bir alan olmadığı için genel bir filtreleme yapalım
-    # Örneğin, okunmaya başlanmış ama tamamlanmamış kitaplar
+    # Kitap Bildirimleri için verileri çek
     reading_books = Book.query.filter(
         Book.UserId == current_user.UserId,
         Book.IsCompleted == False
     ).all()
 
-    # Listening Bildirimleri için verileri çek (Benzer şekilde, dinlenmeye başlanmış ama tamamlanmamış)
+    # Listening Bildirimleri için verileri çek
     reading_listenings = Listening.query.filter(
         Listening.UserId == current_user.UserId,
         Listening.IsCompleted == False
     ).all()
-
-
-
 
     return render_template(
         'notifications.html',
@@ -365,8 +363,8 @@ def notifications():
         today_tasks=today_tasks,
         reading_books=reading_books,
         reading_listenings=reading_listenings,
-        section='takipsistemi', # Set section for sidebar
-        show_sidebar=True # Show sidebar
+        section='takipsistemi',
+        show_sidebar=True
     )
 
 @app.route('/mark_notification_read/<int:notification_id>', methods=['POST'])

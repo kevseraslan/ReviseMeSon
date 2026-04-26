@@ -1636,11 +1636,11 @@ def progress():
             fig_height = max(5, num_rows * 5)
             fig, axs = plt.subplots(num_rows, 2, figsize=(10, fig_height))
 
-            # If only one row, axs might not be a 2D array, flatten it safely
-            if num_rows == 1 and len(dersler) == 1:
-                 axs = [axs] # Make it a list to iterate
+            # If only one row, ensure axs is a list
+            if num_rows == 1:
+                axs = [axs] if isinstance(axs, plt.Axes) else axs
             else:
-                 axs = axs.flatten()
+                axs = axs.flatten()
 
 
             # Hide unused subplots if the total number of categories is odd
@@ -2004,11 +2004,11 @@ def inject_notifications():
             Question.IsCompleted == False,
             Question.IsHidden == False,
             (
-                (Question.Repeat1Date != None) & (db.func.cast(Question.Repeat1Date, db.Date) == today)
+                (Question.RepeatCount == 0) & (db.func.cast(Question.Repeat1Date, db.Date) == today)
                 |
-                (Question.Repeat2Date != None) & (db.func.cast(Question.Repeat2Date, db.Date) == today)
+                (Question.RepeatCount == 1) & (db.func.cast(Question.Repeat2Date, db.Date) == today)
                 |
-                (Question.Repeat3Date != None) & (db.func.cast(Question.Repeat3Date, db.Date) == today)
+                (Question.RepeatCount == 2) & (db.func.cast(Question.Repeat3Date, db.Date) == today)
             )
         ).count()
         if today_questions_count > 0:

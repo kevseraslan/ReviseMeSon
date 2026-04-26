@@ -22,7 +22,7 @@ import base64 # Grafik görselini base64 olarak encode etmek için
 
 app = Flask(__name__)
 # app.config['SECRET_KEY'] = secrets.token_hex(16) # Daha güvenli bir anahtar oluştur - Bu satırı devre dışı bırak
-app.config['SECRET_KEY'] = 'bu-sabit-bir-test-anahtaridir' # TEST AMAÇLI SABİT ANAHTAR
+app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', secrets.token_hex(16)) # TEST AMAÇLI SABİT ANAHTAR
 
 # MSSQL bağlantı parametreleri
 driver = "ODBC Driver 17 for SQL Server"
@@ -47,13 +47,13 @@ app.config['WTF_CSRF_CHECK_DEFAULT'] = False  # CSRF korumasını isteğe bağl�
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
 app.config['MAIL_PORT'] = 587
 app.config['MAIL_USE_TLS'] = True
-app.config['MAIL_USERNAME'] = 'inforeviseme@gmail.com'  # Gmail adresin
-app.config['MAIL_PASSWORD'] = 'calggattsmcvrlvt'     # Gmail uygulama şifren
+app.config['MAIL_USERNAME'] = os.getenv('MAIL_USERNAME', 'default_email@example.com')  # Gmail adresin
+app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD', 'default_password')     # Gmail uygulama şifren
 app.config['MAIL_DEFAULT_SENDER'] = 'inforeviseme@gmail.com'
 
 # SendGrid ayarları
-app.config['SENDGRID_API_KEY'] = 'YOUR_SENDGRID_API_KEY'
-app.config['SENDGRID_FROM_EMAIL'] = 'your-verified-sender@yourdomain.com'
+app.config['SENDGRID_API_KEY'] = os.getenv('SENDGRID_API_KEY', 'default_sendgrid_api_key')
+app.config['SENDGRID_FROM_EMAIL'] = os.getenv('SENDGRID_FROM_EMAIL', 'default_sender@example.com')
 
 # SQLAlchemy nesnesi
 db = SQLAlchemy(app)
